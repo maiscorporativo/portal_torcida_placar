@@ -41,8 +41,28 @@ export interface TrendingPackage {
   approvedAt?: string;
   rejectedBy?: string;
   rejectedAt?: string;
+  /* ── Marketing fields ── */
+  videoUrl?: string;
+  trackingScriptHead?: string;
+  trackingScriptBody?: string;
+  webhookClint?: string;
+  mauticFormCode?: string;
+  redirectUrl?: string;
+  marketingUpdatedAt?: string;
+  marketingUpdatedBy?: string;
+  /* ── Enhanced Marketing fields ── */
+  heroType?: 'video' | 'image';
+  heroImage?: string;
+  galleryImages?: string; // Semicolon separated URLs
+  highlights?: string; // Semicolon separated features/highlights
+  sectionBackground?: string;
+  /* ── New GP Experience LP Sections ── */
+  cardsData?: string; // JSON string para Cards de Experiência
+  programacaoData?: string; // JSON string para dias e programação
+  pacotesOptionsData?: string; // JSON string para opções de pacotes
+  experienciaSection?: string; // JSON string ou texto da seção Experiência
+  partnershipSection?: string; // JSON string ou boolean para parceria
   /* ── Soft-delete ── */
   deletedAt?: string;
   deletedBy?: string;
 }
-

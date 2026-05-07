@@ -9,6 +9,7 @@ import {
 function getSessionToken(): string {
   return localStorage.getItem('emais_admin_token')
       || localStorage.getItem('emais_master_token')
+      || localStorage.getItem('emais_marketing_token')
       || '';
 }
 
@@ -41,6 +42,12 @@ function getAdminUser(): string {
 function getMasterUser(): string {
   const v = localStorage.getItem('emais_master_auth');
   return (v && v !== '1') ? v : 'master';
+}
+
+/** Quem está logado no painel MARKETING */
+function getMarketingUser(): string {
+  const v = localStorage.getItem('emais_marketing_auth');
+  return (v && v !== '1') ? v : 'marketing';
 }
 
 interface ContentStore {
@@ -101,7 +108,10 @@ async function putContent(data: ContentStore & { heroImages?: Record<string, str
     },
     body: JSON.stringify(data),
   });
-  if (!res.ok) throw new Error('Save failed');
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.details || errData.error || 'Save failed');
+  }
 }
 
 const UPDATE_EVENT = 'emais_content_update';
@@ -117,7 +127,7 @@ export function useContentConfig() {
   });
   const [loading, setLoading] = useState(!cached);
   const [saving, setSaving] = useState(false);
-  const [saveError, setSaveError] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const lastUpdated = useRef<string>('');
   const isSaving = useRef(false);
   const hasLocalUnsaved = useRef(false);
@@ -208,11 +218,11 @@ export function useContentConfig() {
       const heroImages = heroRaw ? JSON.parse(heroRaw) : {};
       await putContent({ ...merged, heroImages });
       hasLocalUnsaved.current = false;
-      setSaveError(false);
+      setSaveError(null);
       bc?.postMessage('update');
-    } catch (err) {
+    } catch (err: any) {
       console.warn('[useContentConfig] API save failed:', err);
-      setSaveError(true);
+      setSaveError(err.message || 'Erro desconhecido ao salvar');
     } finally {
       isSaving.current = false;
       setSaving(false);
@@ -268,6 +278,12 @@ export function useContentConfig() {
   const masterUpdatePackage = useCallback((i: number, d: Partial<TrendingPackage>) => {
     const user = getMasterUser();
     const audit = { status: 'approved' as const, approvedBy: user, approvedAt: now() };
+    return persist({ ...content, packages: content.packages.map((p, idx) => idx === i ? { ...p, ...d, ...audit } : p) });
+  }, [content, persist]);
+
+  const marketingUpdatePackage = useCallback((i: number, d: Partial<TrendingPackage>) => {
+    const user = getMarketingUser();
+    const audit = { marketingUpdatedBy: user, marketingUpdatedAt: now() };
     return persist({ ...content, packages: content.packages.map((p, idx) => idx === i ? { ...p, ...d, ...audit } : p) });
   }, [content, persist]);
 
@@ -344,7 +360,7 @@ export function useContentConfig() {
     updateEvent, addEvent, removeEvent, reorderEvent,
     approveEvent, rejectEvent, masterUpdateEvent,
     updatePackage, addPackage, removePackage, restorePackage, permanentRemovePackage, reorderPackage,
-    approvePackage, rejectPackage, masterUpdatePackage, setPackageTrending,
+    approvePackage, rejectPackage, masterUpdatePackage, marketingUpdatePackage, setPackageTrending,
     addCategory, removeCategory, updateCategory, reorderCategory, updateCategoryIcon,
     resetAll, exportConfig, importConfig,
   };

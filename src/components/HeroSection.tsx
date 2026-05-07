@@ -5,22 +5,22 @@ import type { ImageKey } from '../imageConfig';
 type ColItem = { key: ImageKey; alt: string; h: string };
 
 const COL1: ColItem[] = [
-  { key: 'hero_col1_1', alt: 'Esportes ação 1',  h: 'h-48' },
-  { key: 'hero_col1_2', alt: 'Festa e esportes', h: 'h-64' },
-  { key: 'hero_col1_3', alt: 'Estádio vista',    h: 'h-56' },
-  { key: 'hero_col1_4', alt: 'Momento do jogo',  h: 'h-40' },
+  { key: 'hero_col1_1', alt: 'Velocidade ação 1',  h: 'h-48' },
+  { key: 'hero_col1_2', alt: 'Paddock Club', h: 'h-64' },
+  { key: 'hero_col1_3', alt: 'Autódromo vista',    h: 'h-56' },
+  { key: 'hero_col1_4', alt: 'Momento da corrida',  h: 'h-40' },
 ];
 const COL2: ColItem[] = [
-  { key: 'hero_col2_1', alt: 'Vitória esportes', h: 'h-56' },
+  { key: 'hero_col2_1', alt: 'Vitória pódio', h: 'h-56' },
   { key: 'hero_col2_2', alt: 'Copa premium',     h: 'h-48' },
-  { key: 'hero_col2_3', alt: 'Piscina olimpica', h: 'h-64' },
-  { key: 'hero_col2_4', alt: 'Atleta corrida',   h: 'h-48' },
+  { key: 'hero_col2_3', alt: 'Curva da pista', h: 'h-64' },
+  { key: 'hero_col2_4', alt: 'Piloto corrida',   h: 'h-48' },
 ];
 const COL3: ColItem[] = [
-  { key: 'hero_col3_1', alt: 'Bandeira evento',  h: 'h-64' },
-  { key: 'hero_col3_2', alt: 'Pista de luta',    h: 'h-48' },
-  { key: 'hero_col3_3', alt: 'Competição',       h: 'h-56' },
-  { key: 'hero_col3_4', alt: 'Torcida vibrando', h: 'h-40' },
+  { key: 'hero_col3_1', alt: 'Bandeira quadriculada',  h: 'h-64' },
+  { key: 'hero_col3_2', alt: 'Boxes e equipes',    h: 'h-48' },
+  { key: 'hero_col3_3', alt: 'Largada',       h: 'h-56' },
+  { key: 'hero_col3_4', alt: 'Arquibancada vibrando', h: 'h-40' },
 ];
 
 function MarqueeCol({ items, direction, offset, getImage }: {
@@ -61,13 +61,13 @@ export default function HeroSection() {
       {/* Left Content */}
       <Reveal className="w-full lg:w-5/12 z-10 flex flex-col justify-between py-2">
         <div>
-          <h1 className="text-[2.2rem] sm:text-[3.2rem] lg:text-[4.2rem] font-semibold leading-[1.05] mb-6 tracking-tight">
-            O seu passaporte<br />
-            para o<br />
-            <span className="font-light italic text-gold text-[2.2rem] sm:text-[3.2rem] lg:text-[4.2rem]">Inesquecível</span>
+          <h1 className="text-[2.2rem] sm:text-[3.2rem] lg:text-[4.2rem] font-black uppercase leading-[1.05] mb-6 tracking-tight">
+            Sua Convocação<br />
+            Está<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#DFFE00] to-white">Aberta</span>
           </h1>
-          <p className="text-neutral-400 text-lg mb-10 max-w-md leading-relaxed pr-4">
-            Vivencie momentos inesquecíveis com Ingressos Oficiais, VIP e Hospitalidade para os melhores eventos esportivos do mundo, feitos sob medida para você e seus convidados.
+          <p className="text-neutral-400 font-medium text-lg mb-10 max-w-md leading-relaxed pr-4">
+            Viaje com quem já levou multidões para os maiores palcos do mundo. A sua próxima história no esporte começa aqui.
           </p>
           <a
             href="/"

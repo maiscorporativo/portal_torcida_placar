@@ -126,8 +126,13 @@ router.put('/', requireAuth, async (req, res) => {
     broadcastUpdate();
     res.json({ ok: true });
   } catch (err) {
-    console.error('[PUT /api/content]', err.message);
-    res.status(500).json({ error: 'Database error' });
+    console.error('[PUT /api/content] Database error details:', err);
+    res.status(500).json({ 
+      error: 'Database error', 
+      details: err.message, 
+      code: err.code,
+      sqlState: err.sqlState 
+    });
   }
 });
 

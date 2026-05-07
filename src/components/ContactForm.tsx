@@ -27,8 +27,8 @@ function FloatInput({
         onBlur={() => setFocused(false)}
         style={{
           width: '100%', boxSizing: 'border-box',
-          background: '#0d2d4e',
-          border: `1.5px solid ${focused ? '#f37126' : 'rgba(255,255,255,0.1)'}`,
+          background: '#111111',
+          border: `1.5px solid ${focused ? '#DFFE00' : 'rgba(255,255,255,0.1)'}`,
           borderRadius: 12,
           color: '#fff',
           fontSize: 15,
@@ -47,7 +47,7 @@ function FloatInput({
           top: raised ? 8 : '50%',
           transform: raised ? 'none' : 'translateY(-50%)',
           fontSize: raised ? 10 : 14,
-          color: focused ? '#f37126' : 'rgba(255,255,255,0.38)',
+          color: focused ? '#DFFE00' : 'rgba(255,255,255,0.38)',
           fontWeight: raised ? 700 : 400,
           letterSpacing: raised ? '0.08em' : '0.01em',
           textTransform: raised ? 'uppercase' : 'none',
@@ -62,7 +62,7 @@ function FloatInput({
       <span style={{
         position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)',
         height: 2, width: focused ? '92%' : 0,
-        background: 'linear-gradient(90deg, #f37126, #faa71d)',
+        background: 'linear-gradient(90deg, #DFFE00, #C2E000)',
         borderRadius: 2, transition: 'width 0.25s ease',
         pointerEvents: 'none',
       }} />
@@ -91,8 +91,8 @@ function PhoneInput({ value, onChange }: { value: string; onChange: (v: string) 
         style={{
           display: 'flex', alignItems: 'center',
           width: '100%', boxSizing: 'border-box',
-          background: '#0d2d4e',
-          border: `1.5px solid ${focused ? '#f37126' : 'rgba(255,255,255,0.1)'}`,
+          background: '#111111',
+          border: `1.5px solid ${focused ? '#DFFE00' : 'rgba(255,255,255,0.1)'}`,
           borderRadius: 12,
           padding: '22px 18px 8px',
           transition: 'border-color 0.2s, background 0.2s',
@@ -142,7 +142,7 @@ function PhoneInput({ value, onChange }: { value: string; onChange: (v: string) 
           top: raised ? 8 : '50%',
           transform: raised ? 'none' : 'translateY(-50%)',
           fontSize: raised ? 10 : 14,
-          color: focused ? '#f37126' : 'rgba(255,255,255,0.38)',
+          color: focused ? '#DFFE00' : 'rgba(255,255,255,0.38)',
           fontWeight: raised ? 700 : 400,
           letterSpacing: raised ? '0.08em' : '0.01em',
           textTransform: raised ? 'uppercase' : 'none',
@@ -156,7 +156,7 @@ function PhoneInput({ value, onChange }: { value: string; onChange: (v: string) 
       <span style={{
         position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)',
         height: 2, width: focused ? '92%' : 0,
-        background: 'linear-gradient(90deg, #f37126, #faa71d)',
+        background: 'linear-gradient(90deg, #DFFE00, #C2E000)',
         borderRadius: 2, transition: 'width 0.25s ease',
         pointerEvents: 'none',
       }} />
@@ -202,8 +202,8 @@ function PackageSelect({ id, value, onChange }: { id: string; value: string; onC
         <div
           style={{
             display: 'flex', alignItems: 'center', gap: 10,
-            background: 'linear-gradient(135deg, rgba(243,113,38,0.1) 0%, rgba(250,167,29,0.04) 100%)',
-            border: '1.5px solid rgba(243,113,38,0.45)',
+            background: 'linear-gradient(135deg, rgba(223,254,0,0.1) 0%, rgba(194,224,0,0.04) 100%)',
+            border: '1.5px solid rgba(223,254,0,0.45)',
             borderRadius: 12,
             padding: '22px 12px 8px 14px',   /* mesma altura dos outros inputs */
             position: 'relative', overflow: 'hidden',
@@ -213,7 +213,7 @@ function PackageSelect({ id, value, onChange }: { id: string; value: string; onC
           {/* Glow */}
           <div style={{
             position: 'absolute', inset: 0,
-            background: 'radial-gradient(ellipse at left, rgba(243,113,38,0.07) 0%, transparent 65%)',
+            background: 'radial-gradient(ellipse at left, rgba(223,254,0,0.07) 0%, transparent 65%)',
             pointerEvents: 'none',
           }} />
 
@@ -221,7 +221,7 @@ function PackageSelect({ id, value, onChange }: { id: string; value: string; onC
           <span style={{
             position: 'absolute', left: 14, top: 8,
             fontSize: 10, fontWeight: 800, letterSpacing: '0.1em',
-            textTransform: 'uppercase', color: '#f37126',
+            textTransform: 'uppercase', color: '#DFFE00',
             pointerEvents: 'none',
           }}>
             Pacote de interesse
@@ -231,7 +231,7 @@ function PackageSelect({ id, value, onChange }: { id: string; value: string; onC
           {selectedPkg.img && (
             <div style={{
               flexShrink: 0, width: 32, height: 32, borderRadius: 7,
-              overflow: 'hidden', border: '1.5px solid rgba(243,113,38,0.4)',
+              overflow: 'hidden', border: '1.5px solid rgba(223,254,0,0.4)',
             }}>
               <img src={selectedPkg.img} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </div>
@@ -250,9 +250,9 @@ function PackageSelect({ id, value, onChange }: { id: string; value: string; onC
           {priceStr && (
             <span style={{
               flexShrink: 0,
-              fontSize: 12, fontWeight: 800, color: '#f37126',
-              background: 'rgba(243,113,38,0.12)',
-              border: '1px solid rgba(243,113,38,0.25)',
+              fontSize: 12, fontWeight: 800, color: '#DFFE00',
+              background: 'rgba(223,254,0,0.12)',
+              border: '1px solid rgba(223,254,0,0.25)',
               padding: '3px 8px', borderRadius: 7,
               whiteSpace: 'nowrap',
             }}>
@@ -270,7 +270,7 @@ function PackageSelect({ id, value, onChange }: { id: string; value: string; onC
               cursor: 'pointer', color: 'rgba(255,255,255,0.45)',
               display: 'flex', alignItems: 'center', transition: 'all 0.15s',
             }}
-            onMouseEnter={e => { const b = e.currentTarget as HTMLButtonElement; b.style.color = '#f37126'; b.style.borderColor = 'rgba(243,113,38,0.4)'; }}
+            onMouseEnter={e => { const b = e.currentTarget as HTMLButtonElement; b.style.color = '#DFFE00'; b.style.borderColor = 'rgba(223,254,0,0.4)'; }}
             onMouseLeave={e => { const b = e.currentTarget as HTMLButtonElement; b.style.color = 'rgba(255,255,255,0.45)'; b.style.borderColor = 'rgba(255,255,255,0.1)'; }}
           >
             <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
@@ -298,8 +298,8 @@ function PackageSelect({ id, value, onChange }: { id: string; value: string; onC
           placeholder={open ? 'Buscar pacote...' : ' '}
           style={{
             width: '100%', boxSizing: 'border-box',
-            background: active ? '#0e3055' : '#0d2d4e',
-            border: `1.5px solid ${active ? '#f37126' : 'rgba(255,255,255,0.1)'}`,
+            background: active ? '#1a1a1a' : '#111111',
+            border: `1.5px solid ${active ? '#DFFE00' : 'rgba(255,255,255,0.1)'}`,
             borderRadius: open ? '12px 12px 0 0' : 12,
             color: '#fff', fontSize: 15,
             padding: '22px 42px 8px 18px',
@@ -315,7 +315,7 @@ function PackageSelect({ id, value, onChange }: { id: string; value: string; onC
             top: raised ? 8 : '50%',
             transform: raised ? 'none' : 'translateY(-50%)',
             fontSize: raised ? 10 : 14,
-            color: active ? '#f37126' : 'rgba(255,255,255,0.38)',
+            color: active ? '#DFFE00' : 'rgba(255,255,255,0.38)',
             fontWeight: raised ? 700 : 400,
             letterSpacing: raised ? '0.08em' : '0.01em',
             textTransform: raised ? 'uppercase' : 'none',
@@ -329,7 +329,7 @@ function PackageSelect({ id, value, onChange }: { id: string; value: string; onC
           position: 'absolute', right: 14, top: '50%',
           transform: `translateY(-50%) rotate(${open ? 180 : 0}deg)`,
           transition: 'transform 0.2s ease',
-          pointerEvents: 'none', color: active ? '#f37126' : 'rgba(255,255,255,0.3)',
+          pointerEvents: 'none', color: active ? '#DFFE00' : 'rgba(255,255,255,0.3)',
           display: 'flex', alignItems: 'center',
         }}>
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -339,7 +339,7 @@ function PackageSelect({ id, value, onChange }: { id: string; value: string; onC
         <span style={{
           position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)',
           height: 2, width: active && !open ? '92%' : 0,
-          background: 'linear-gradient(90deg, #f37126, #faa71d)',
+          background: 'linear-gradient(90deg, #DFFE00, #C2E000)',
           borderRadius: 2, transition: 'width 0.25s ease', pointerEvents: 'none',
         }} />
       </div>
@@ -347,9 +347,9 @@ function PackageSelect({ id, value, onChange }: { id: string; value: string; onC
       {open && (
         <div style={{
           position: 'absolute', left: 0, right: 0,
-          background: '#0b1e33',
-          border: '1.5px solid #f37126',
-          borderTop: '1px solid rgba(243,113,38,0.2)',
+          background: '#0a0a0a',
+          border: '1.5px solid #DFFE00',
+          borderTop: '1px solid rgba(223,254,0,0.2)',
           borderRadius: '0 0 14px 14px',
           zIndex: 500, overflowY: 'auto', overflowX: 'hidden',
           maxHeight: 260,
@@ -376,17 +376,17 @@ function PackageSelect({ id, value, onChange }: { id: string; value: string; onC
                     display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
                     width: '100%', textAlign: 'left',
                     padding: '13px 16px',
-                    background: selected ? 'rgba(243,113,38,0.1)' : 'none',
+                    background: selected ? 'rgba(223,254,0,0.1)' : 'none',
                     border: 'none',
                     borderTop: i > 0 ? '1px solid rgba(255,255,255,0.05)' : 'none',
                     cursor: 'pointer', fontFamily: 'inherit',
                     transition: 'background 0.12s', gap: 10,
                   }}
                   onMouseEnter={e => { if (!selected) (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255,255,255,0.05)'; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = selected ? 'rgba(243,113,38,0.1)' : 'none'; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = selected ? 'rgba(223,254,0,0.1)' : 'none'; }}
                 >
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 14, fontWeight: selected ? 700 : 500, color: selected ? '#f37126' : '#fff', lineHeight: 1.35, overflowWrap: 'break-word', wordBreak: 'break-word' }}>
+                    <div style={{ fontSize: 14, fontWeight: selected ? 700 : 500, color: selected ? '#DFFE00' : '#fff', lineHeight: 1.35, overflowWrap: 'break-word', wordBreak: 'break-word' }}>
                       {pkg.title}
                     </div>
                     {pkg.loc && (
@@ -399,14 +399,14 @@ function PackageSelect({ id, value, onChange }: { id: string; value: string; onC
                     {priceStr && (
                       <span style={{
                         fontSize: 12, fontWeight: 700,
-                        color: selected ? '#f37126' : 'rgba(255,255,255,0.4)',
-                        background: selected ? 'rgba(243,113,38,0.12)' : 'rgba(255,255,255,0.05)',
+                        color: selected ? '#DFFE00' : 'rgba(255,255,255,0.4)',
+                        background: selected ? 'rgba(223,254,0,0.12)' : 'rgba(255,255,255,0.05)',
                         padding: '3px 8px', borderRadius: 6,
                       }}>{priceStr}</span>
                     )}
                     {selected && (
                       <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                        <path d="M2.5 7l3.5 3.5 5.5-6" stroke="#f37126" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M2.5 7l3.5 3.5 5.5-6" stroke="#DFFE00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     )}
                   </div>
@@ -480,7 +480,7 @@ export default function ContactForm() {
     <section
       id="contato-form"
       style={{
-        background: 'linear-gradient(180deg, #071d38 0%, #082242 100%)',
+        background: 'linear-gradient(180deg, #000000 0%, #09090b 100%)',
         padding: '96px 24px',
         position: 'relative',
       }}
@@ -495,12 +495,12 @@ export default function ContactForm() {
       {/* decorative glow orbs */}
       <div style={{
         position: 'absolute', top: -120, left: -120, width: 400, height: 400,
-        background: 'radial-gradient(circle, rgba(243,113,38,0.12) 0%, transparent 70%)',
+        background: 'radial-gradient(circle, rgba(223,254,0,0.12) 0%, transparent 70%)',
         borderRadius: '50%', pointerEvents: 'none',
       }} />
       <div style={{
         position: 'absolute', bottom: -80, right: -80, width: 320, height: 320,
-        background: 'radial-gradient(circle, rgba(250,167,29,0.08) 0%, transparent 70%)',
+        background: 'radial-gradient(circle, rgba(194,224,0,0.08) 0%, transparent 70%)',
         borderRadius: '50%', pointerEvents: 'none',
       }} />
 
@@ -520,7 +520,7 @@ export default function ContactForm() {
             <span style={{
               display: 'inline-block', fontSize: 11, fontWeight: 800,
               letterSpacing: '0.22em', textTransform: 'uppercase',
-              color: '#f37126', marginBottom: 20,
+              color: '#DFFE00', marginBottom: 20,
             }}>
               Fale com a gente
             </span>
@@ -533,7 +533,7 @@ export default function ContactForm() {
             }}>
               Planeje sua<br />
               <span style={{
-                background: 'linear-gradient(90deg, #f37126, #faa71d)',
+                background: 'linear-gradient(90deg, #DFFE00, #C2E000)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}>
@@ -559,12 +559,12 @@ export default function ContactForm() {
                 <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <span style={{
                     width: 22, height: 22, borderRadius: '50%',
-                    background: 'rgba(243,113,38,0.15)',
+                    background: 'rgba(223,254,0,0.15)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                     flexShrink: 0,
                   }}>
                     <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
-                      <path d="M2 5.5L4.5 8L9 3" stroke="#f37126" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M2 5.5L4.5 8L9 3" stroke="#DFFE00" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </span>
                   <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>{text}</span>
@@ -590,11 +590,11 @@ export default function ContactForm() {
               <div style={{ textAlign: 'center', padding: '32px 0' }}>
                 <div style={{
                   width: 72, height: 72, borderRadius: '50%',
-                  background: 'rgba(243,113,38,0.12)',
+                  background: 'rgba(223,254,0,0.12)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   margin: '0 auto 24px',
                 }}>
-                  <CheckCircle2 size={36} color="#f37126" />
+                  <CheckCircle2 size={36} color="#DFFE00" />
                 </div>
                 <h3 style={{ fontSize: 22, fontWeight: 800, color: '#fff', margin: '0 0 10px', letterSpacing: '-0.02em' }}>
                   Formulário enviado com sucesso!
@@ -605,10 +605,10 @@ export default function ContactForm() {
                 <button
                   onClick={() => { setNome(''); setEmail(''); setTelefone(''); setPacote(''); setStatus('idle'); }}
                   style={{
-                    background: 'none', border: 'none', color: '#f37126',
+                    background: 'none', border: 'none', color: '#DFFE00',
                     fontSize: 13, fontWeight: 700, cursor: 'pointer',
                     letterSpacing: '0.06em', textTransform: 'uppercase',
-                    textDecoration: 'underline', textDecorationColor: 'rgba(243,113,38,0.4)',
+                    textDecoration: 'underline', textDecorationColor: 'rgba(223,254,0,0.4)',
                   }}
                 >
                   Enviar outro formulário?
@@ -652,15 +652,15 @@ export default function ContactForm() {
                     display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
                     padding: '16px 32px',
                     background: status === 'sending'
-                      ? 'rgba(243,113,38,0.5)'
-                      : 'linear-gradient(135deg, #f37126 0%, #faa71d 100%)',
+                      ? 'rgba(223,254,0,0.5)'
+                      : 'linear-gradient(135deg, #DFFE00 0%, #C2E000 100%)',
                     color: '#000',
                     fontWeight: 800, fontSize: 14,
                     letterSpacing: '0.08em', textTransform: 'uppercase',
                     border: 'none', borderRadius: 100,
                     cursor: status === 'sending' ? 'wait' : 'pointer',
                     transition: 'opacity 0.2s, transform 0.15s',
-                    boxShadow: '0 8px 32px rgba(243,113,38,0.35)',
+                    boxShadow: '0 8px 32px rgba(223,254,0,0.35)',
                     fontFamily: 'inherit',
                   }}
                   onMouseEnter={e => { if (status !== 'sending') (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.02)'; }}

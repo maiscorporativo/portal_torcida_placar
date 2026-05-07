@@ -30,63 +30,63 @@ export default function PlatinumAccess() {
   ];
 
   return (
-    <section id="platinum" className="bg-gold text-black py-24 px-6 overflow-hidden">
+    <section id="platinum" className="bg-slate-50 text-slate-900 py-24 px-6 overflow-hidden">
       <div className="max-w-[1400px] mx-auto">
         <div className="flex flex-col lg:flex-row gap-16 lg:gap-24 items-center">
           
           {/* Left Content */}
           <Reveal className="w-full lg:w-1/2 flex flex-col items-start text-left">
-            <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-white/90 mb-6 block">
+            <span className="text-[11px] font-bold uppercase tracking-[0.25em] text-slate-500 mb-6 block">
               Experiências Premium
             </span>
-            <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter text-white mb-6 leading-[1.1]">
+            <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter text-slate-900 mb-6 leading-[1.1]">
               Acesso<br />Platinum
             </h2>
-            <h3 className="text-2xl md:text-3xl font-light mb-8 text-white leading-tight">
+            <h3 className="text-2xl md:text-3xl font-light mb-8 text-slate-800 leading-tight">
               Curadoria. Personalização. <span className="font-semibold">Sem limites.</span>
             </h3>
-            <p className="text-black/80 font-medium text-base md:text-lg leading-relaxed mb-10 max-w-xl">
+            <p className="text-slate-600 font-medium text-base md:text-lg leading-relaxed mb-10 max-w-xl">
               Antes, durante e depois — o Acesso Platinum transforma cada evento em uma experiência completa. Vivencie os bastidores com exclusividade e eleve seu pacote com upgrades sob medida, para qualquer esporte ou evento, em qualquer lugar do mundo.
             </p>
             
-            <button onClick={scrollToContact} className="text-sm font-bold uppercase tracking-[0.15em] text-white border-b-2 border-white pb-2 hover:text-black hover:border-black transition-colors mb-16">
+            <button onClick={scrollToContact} className="text-sm font-bold uppercase tracking-[0.15em] text-slate-900 border-b-2 border-slate-900 pb-2 hover:text-gold hover:border-gold transition-colors mb-16">
               Vamos Planejar a Viagem
             </button>
 
             {/* Features Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 w-full">
               <div className="flex gap-4 items-start">
-                <div className="text-white mt-1 shrink-0 bg-black/10 p-2 rounded-full"><Check size={18} strokeWidth={3} /></div>
+                <div className="text-black mt-1 shrink-0 bg-gold p-2 rounded-full"><Check size={18} strokeWidth={3} /></div>
                 <div>
-                  <h5 className="font-bold text-sm mb-1 uppercase tracking-[0.1em] text-white">Programas Sob Medida</h5>
+                  <h5 className="font-bold text-sm mb-1 uppercase tracking-[0.1em] text-slate-900">Programas Sob Medida</h5>
                   <p className="text-sm text-black/70 font-medium">Roteiros personalizados para cada necessidade.</p>
                 </div>
               </div>
               <div className="flex gap-4 items-start">
-                <div className="text-white mt-1 shrink-0 bg-black/10 p-2 rounded-full"><Check size={18} strokeWidth={3} /></div>
+                <div className="text-black mt-1 shrink-0 bg-gold p-2 rounded-full"><Check size={18} strokeWidth={3} /></div>
                 <div>
-                  <h5 className="font-bold text-sm mb-1 uppercase tracking-[0.1em] text-white">Acesso Inigualável</h5>
+                  <h5 className="font-bold text-sm mb-1 uppercase tracking-[0.1em] text-slate-900">Acesso Inigualável</h5>
                   <p className="text-sm text-black/70 font-medium">Bastidores, áreas VIP e camarotes exclusivos.</p>
                 </div>
               </div>
               <div className="flex gap-4 items-start">
-                <div className="text-white mt-1 shrink-0 bg-black/10 p-2 rounded-full"><Check size={18} strokeWidth={3} /></div>
+                <div className="text-black mt-1 shrink-0 bg-gold p-2 rounded-full"><Check size={18} strokeWidth={3} /></div>
                 <div>
-                  <h5 className="font-bold text-sm mb-1 uppercase tracking-[0.1em] text-white">Acomodações de Luxo</h5>
+                  <h5 className="font-bold text-sm mb-1 uppercase tracking-[0.1em] text-slate-900">Acomodações de Luxo</h5>
                   <p className="text-sm text-black/70 font-medium">Hotéis 5 estrelas e vilas privativas.</p>
                 </div>
               </div>
               <div className="flex gap-4 items-start">
-                <div className="text-white mt-1 shrink-0 bg-black/10 p-2 rounded-full"><Check size={18} strokeWidth={3} /></div>
+                <div className="text-black mt-1 shrink-0 bg-gold p-2 rounded-full"><Check size={18} strokeWidth={3} /></div>
                 <div>
-                  <h5 className="font-bold text-sm mb-1 uppercase tracking-[0.1em] text-white">Experiência Pré-Evento</h5>
+                  <h5 className="font-bold text-sm mb-1 uppercase tracking-[0.1em] text-slate-900">Experiência Pré-Evento</h5>
                   <p className="text-sm text-black/70 font-medium">Acesso exclusivo aos bastidores, área VIP e meet & greet com atletas e artistas.</p>
                 </div>
               </div>
               <div className="flex gap-4 items-start sm:col-span-2">
-                <div className="text-white mt-1 shrink-0 bg-black/10 p-2 rounded-full"><Check size={18} strokeWidth={3} /></div>
+                <div className="text-black mt-1 shrink-0 bg-gold p-2 rounded-full"><Check size={18} strokeWidth={3} /></div>
                 <div>
-                  <h5 className="font-bold text-sm mb-1 uppercase tracking-[0.1em] text-white">Upgrades de Pacote</h5>
+                  <h5 className="font-bold text-sm mb-1 uppercase tracking-[0.1em] text-slate-900">Upgrades de Pacote</h5>
                   <p className="text-sm text-black/70 font-medium">Eleve seu pacote a qualquer momento — camarotes, transfers privativos, open bar e muito mais.</p>
                 </div>
               </div>
@@ -99,8 +99,8 @@ export default function PlatinumAccess() {
             delay={200}
           >
             {/* Top & bottom fade masks */}
-            <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-gold to-transparent z-10 pointer-events-none" />
-            <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-gold to-transparent z-10 pointer-events-none" />
+            <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-slate-50 to-transparent z-10 pointer-events-none" />
+            <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-slate-50 to-transparent z-10 pointer-events-none" />
 
             <div className="relative flex gap-3 h-full w-full p-3">
 

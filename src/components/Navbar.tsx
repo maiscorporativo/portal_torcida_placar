@@ -17,24 +17,26 @@ export default function Navbar() {
       {/* Top Banner */}
       <div className="w-full px-8 pt-4 pb-2 text-xs flex justify-center items-center text-neutral-100 font-medium">
         <span className="text-center">
-          Confira nosso <a href="/" onClick={scrollTo('events')} className="underline text-gold hover:text-white transition-colors font-bold">calendário completo de eventos</a>
+          Confira nosso <a href="/" onClick={scrollTo('events')} className="underline text-gold hover:text-white transition-colors font-bold">calendário completo de pacotes esportivos</a>
         </span>
       </div>
 
 
       <nav className="w-full sticky top-4 z-50 px-4 transition-all mb-6">
-        <div className="mx-auto w-full max-w-[1400px] flex items-center justify-between h-[52px] bg-[#041121]/60 backdrop-blur-lg rounded-lg px-6 shadow-xl border border-white/10 font-sans">
+        <div className="mx-auto w-full max-w-[1400px] flex items-center justify-between h-[86px] bg-[#09090b]/60 backdrop-blur-lg rounded-lg px-6 shadow-xl border border-white/10 font-sans">
 
           {/* Logo */}
-          <div className="flex-shrink-0 flex items-center cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <img src="/emais-logo.svg" alt="e-mais" className="h-[22px]" />
+          <div className="flex-shrink-0 flex items-center cursor-pointer py-1" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+            <div className="text-2xl font-black uppercase tracking-tighter text-white">
+              TORCIDA <span className="text-gold">PLACAR</span>
+            </div>
           </div>
 
           {/* Desktop Menu */}
           <div className="hidden lg:flex items-center space-x-7 text-[13px] text-neutral-300 font-medium">
-            <a href="/" onClick={scrollTo('trending')} className="hover:text-gold transition-colors duration-200">Em Alta</a>
-            <a href="/" onClick={scrollTo('events')} className="hover:text-gold transition-colors duration-200">Eventos</a>
-            <a href="/" onClick={scrollTo('platinum')} className="hover:text-gold transition-colors duration-200">Acesso Platinum</a>
+            <a href="/" onClick={scrollTo('trending')} className="hover:text-gold transition-colors duration-200">Mais Vendidos</a>
+            <a href="/" onClick={scrollTo('events')} className="hover:text-gold transition-colors duration-200">Pacotes</a>
+            <a href="/" onClick={scrollTo('platinum')} className="hover:text-gold transition-colors duration-200">Acesso Vip</a>
 
           </div>
 
@@ -56,9 +58,9 @@ export default function Navbar() {
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl lg:hidden pt-24 px-6 flex flex-col">
           <div className="flex flex-col gap-6 text-xl font-medium text-center text-white">
-            <a href="/" className="hover:text-gold" onClick={scrollTo('trending')}>Em Alta</a>
-            <a href="/" className="hover:text-gold" onClick={scrollTo('events')}>Eventos</a>
-            <a href="/" className="hover:text-gold" onClick={scrollTo('platinum')}>Acesso Platinum</a>
+            <a href="/" className="hover:text-gold" onClick={scrollTo('trending')}>Mais Vendidos</a>
+            <a href="/" className="hover:text-gold" onClick={scrollTo('events')}>Pacotes</a>
+            <a href="/" className="hover:text-gold" onClick={scrollTo('platinum')}>Acesso Vip</a>
 
 
           </div>

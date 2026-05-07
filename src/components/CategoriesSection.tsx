@@ -1,26 +1,26 @@
-import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ChevronDown, MapPin, Calendar, ArrowRight } from 'lucide-react';
 import type { TrendingPackage } from '../types';
+import { useState } from 'react';
 import { useContentConfig } from '../hooks/useContentConfig';
-import PackageModal from './PackageModal';
 import Reveal from './Reveal';
 import { getCurrencySymbol, formatDisplayPrice } from '../utils/currency';
 
 /* ── Category icons/emojis ── */
 const CATEGORY_ICONS: Record<string, string> = {
-  'Futebol': '⚽',
-  'Futebol Americano': '🏈',
-  'F1 / Automobilismo': '🏎️',
-  'UFC / MMA': '🥊',
-  'Tênis': '🎾',
-  'Basquete': '🏀',
-  'WWE / Wrestling': '🤼',
+  'Fórmula 1': '🏎️',
+  'MotoGP': '🏍️',
+  'Fórmula E': '⚡',
+  'Stock Car': '🚘',
+  'Porsche Cup': '🏁',
+  'Nascar': '🏎️',
+  'WEC / Endurance': '⏱️',
   'Multiesportivo': '🏅',
   'Outros': '🎟️',
 };
 
 /* ── Mini package card ── */
-function PackageCard({ pkg, onClick }: { pkg: TrendingPackage; onClick: () => void }) {
+function PackageCard({ pkg, onClick }: { pkg: TrendingPackage & { originalIndex: number }; onClick: () => void }) {
   const curr = pkg.currency || 'BRL';
   return (
     <div
@@ -67,13 +67,18 @@ function CategoryAccordion({
   category, packages, isOpen, onToggle, iconEmoji,
 }: {
   category: string;
-  packages: TrendingPackage[];
+  packages: (TrendingPackage & { originalIndex: number })[];
   isOpen: boolean;
   onToggle: () => void;
   iconEmoji?: string;
 }) {
-  const [selectedPkg, setSelectedPkg] = useState<TrendingPackage | null>(null);
+  const navigate = useNavigate();
   const displayIcon = iconEmoji || CATEGORY_ICONS[category] || '🎟️';
+
+  const handleNavigate = (idx: number) => {
+    navigate(`/pacote/${idx}`);
+    window.scrollTo(0, 0);
+  };
 
   return (
     <div className="border border-white/10 rounded-2xl overflow-hidden transition-all duration-300">
@@ -101,17 +106,12 @@ function CategoryAccordion({
       >
         <div className="px-6 pb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 border-t border-white/5 pt-5">
           {packages.map((pkg) => (
-            <PackageCard key={pkg.title} pkg={pkg} onClick={() => setSelectedPkg(pkg)} />
+            <PackageCard key={pkg.originalIndex} pkg={pkg} onClick={() => handleNavigate(pkg.originalIndex)} />
           ))}
         </div>
       </div>
 
-      {/* Modal */}
-      <PackageModal
-        isOpen={!!selectedPkg}
-        onClose={() => setSelectedPkg(null)}
-        pkg={selectedPkg}
-      />
+      {/* Modal removed */}
     </div>
   );
 }
@@ -121,11 +121,13 @@ export default function CategoriesSection() {
   const { packages: allPackages, categoryIcons, categories: configCategories } = useContentConfig();
   const [openCategory, setOpenCategory] = useState<string | null>(null);
 
-  // Filtrar apenas aprovados
-  const packages = allPackages.filter(p => (!p.status || p.status === 'approved') && !p.deletedAt);
+  // Filtrar apenas aprovados, preservando o index original
+  const packages = allPackages
+    .map((p, i) => ({ ...p, originalIndex: i }))
+    .filter(p => (!p.status || p.status === 'approved') && !p.deletedAt);
 
-  // Agrupar por categoria
-  const grouped = packages.reduce<Record<string, TrendingPackage[]>>((acc, pkg) => {
+  // Agrupar por categoria com índices originais
+  const grouped = packages.reduce<Record<string, (TrendingPackage & { originalIndex: number })[]>>((acc, pkg) => {
     const cat = pkg.category || 'Outros';
     if (!acc[cat]) acc[cat] = [];
     acc[cat].push(pkg);

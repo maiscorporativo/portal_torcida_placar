@@ -4,7 +4,7 @@ import Reveal from './Reveal';
 export default function Footer() {
 
     return (
-        <footer className="bg-[#041121] text-white font-sans overflow-hidden relative">
+        <footer className="bg-[#09090b] text-white font-sans overflow-hidden relative">
 
             {/* Subtle gradient glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gold/5 rounded-full blur-[120px] pointer-events-none" />
@@ -12,9 +12,9 @@ export default function Footer() {
             {/* CTA Hero strip */}
             <div className="relative border-b border-white/8 px-6 py-20 text-center">
                 <Reveal>
-                    <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold mb-5">Experimente o Premium</p>
-                    <h2 className="footer-cta-heading text-5xl md:text-7xl font-bold tracking-tight text-white mb-8 leading-[1.05]">
-                        Descubra a sua<br />
+                    <p className="text-xs font-bold uppercase tracking-[0.3em] text-gold mb-5">A Maior Jornada do Esporte</p>
+                    <h2 className="footer-cta-heading text-5xl md:text-7xl font-black tracking-tight text-white mb-8 leading-[1.05] uppercase">
+                        Viva a sua<br />
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold to-gold-secondary">melhor experiência.</span>
                     </h2>
                     <a
@@ -32,9 +32,11 @@ export default function Footer() {
             {/* Brand Center */}
             <div className="relative max-w-[1400px] mx-auto px-6 py-16">
                 <Reveal className="flex flex-col items-center text-center gap-5">
-                    <img src="/emais-logo.svg" alt="e-mais" className="h-[28px]" />
-                    <p className="text-sm text-neutral-400 leading-relaxed max-w-md">
-                        Hospitalidade premium e experiências inesquecíveis nos maiores eventos esportivos e de entretenimento do mundo.
+                    <div className="text-3xl font-black uppercase tracking-tighter text-white">
+                        TORCIDA <span className="text-gold">PLACAR</span>
+                    </div>
+                    <p className="text-sm text-neutral-400 leading-relaxed max-w-md font-medium">
+                        Hospitalidade premium e experiências inesquecíveis nos maiores eventos esportivos do mundo.
                     </p>
 
                     <div className="flex gap-3 pt-1">
@@ -45,10 +47,9 @@ export default function Footer() {
                 </Reveal>
             </div>
 
-            {/* Bottom bar */}
             <div className="border-t border-white/8 px-6 py-6 max-w-[1400px] mx-auto flex flex-col items-center gap-3 text-[12px] text-neutral-600">
                 <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-                    <span className="text-neutral-500 font-medium">© {new Date().getFullYear()} E-MAIS.</span>
+                    <span className="text-neutral-500 font-bold">© {new Date().getFullYear()} TORCIDA PLACAR.</span>
                     <a href="https://maiscorporativo.tur.br/politica-de-privacidade/" target="_blank" rel="noopener noreferrer" className="hover:text-neutral-300 transition-colors">Privacidade</a>
                     <a href="https://emais.tur.br/admin" target="_blank" rel="noopener noreferrer" className="hover:text-neutral-300 transition-colors">Administrador</a>
                     <a href="https://emais.tur.br/admin-master" target="_blank" rel="noopener noreferrer" className="hover:text-neutral-300 transition-colors">Administrador Master</a>

@@ -1,4 +1,4 @@
 @echo off
-cd /d "%~dp0\clone-onlocation"
+cd /d "%~dp0"
 start http://localhost:3010/
-npm run dev
+npm run dev:all

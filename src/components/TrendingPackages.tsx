@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import type { TrendingPackage } from '../types';
 import Reveal from './Reveal';
@@ -9,29 +9,20 @@ import { getCurrencySymbol, formatDisplayPrice } from '../utils/currency';
 
 
 export default function TrendingPackages() {
-  const [selectedPackage, setSelectedPackage] = useState<TrendingPackage | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
   const { packages: allPackages } = useContentConfig();
-  const packages = allPackages
+  
+  const packagesWithIndex = allPackages
+    .map((p, i) => ({ ...p, originalIndex: i }))
     .filter(p => (!p.status || p.status === 'approved') && p.isTrending === true && !p.deletedAt)
     .slice(0, 8);
 
-  const handleOpenModal = (pkg: TrendingPackage) => {
-    setSelectedPackage(pkg);
-    setIsModalOpen(true);
-    // eslint-disable-next-line react-hooks/immutability
-    document.body.style.overflow = 'hidden';
+  const handleNavigate = (idx: number) => {
+    navigate(`/pacote/${idx}`);
+    window.scrollTo(0, 0);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setTimeout(() => {
-      setSelectedPackage(null);
-      document.body.style.overflow = '';
-    }, 300);
-  };
-
-  if (packages.length === 0) return null;
+  if (packagesWithIndex.length === 0) return null;
 
   return (
     <section id="trending" className="bg-neutral-50 text-black py-24 px-6 relative">
@@ -49,15 +40,15 @@ export default function TrendingPackages() {
           }}
           className="trending-grid"
         >
-          {packages.map((pkg) => (
+          {packagesWithIndex.map((pkg) => (
             <div
-              key={pkg.title}
+              key={pkg.originalIndex}
               style={{ perspective: '1000px' }}
             >
               <div
                 className="bg-white rounded-xl overflow-hidden shadow-sm transition-all duration-300 border border-neutral-200 flex flex-col group h-full relative z-10 hover:shadow-2xl cursor-pointer"
                 style={{ WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
-                onClick={() => handleOpenModal(pkg)}
+                onClick={() => handleNavigate(pkg.originalIndex)}
                 onMouseMove={(e) => {
                   const rect = e.currentTarget.getBoundingClientRect();
                   const x = e.clientX - rect.left;
@@ -97,7 +88,7 @@ export default function TrendingPackages() {
                     <div className="flex items-center justify-between mt-1">
                       <span className="font-semibold text-lg">{getCurrencySymbol(pkg.currency || 'BRL')} {formatDisplayPrice(pkg.price, pkg.currency || 'BRL')}</span>
                       <button
-                        onClick={(e) => { e.stopPropagation(); handleOpenModal(pkg); }}
+                        onClick={(e) => { e.stopPropagation(); handleNavigate(pkg.originalIndex); }}
                         className="text-sm font-semibold text-gold hover:text-black transition-colors flex items-center gap-1"
                         aria-label={`Ver pacote ${pkg.title}`}
                       >
@@ -114,11 +105,7 @@ export default function TrendingPackages() {
           ))}
         </div>
 
-        <PackageModal
-          isOpen={isModalOpen}
-          onClose={handleCloseModal}
-          pkg={selectedPackage}
-        />
+        {/* Modal removed because we now use LPs */}
       </div>
 
       {/* Responsive: 2 colunas em tablet, 1 no mobile */}

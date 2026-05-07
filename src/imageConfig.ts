@@ -3,18 +3,18 @@
 
 export const DEFAULT_IMAGES = {
   // Hero Section Gallery — 12 images (3 columns auto-scroll)
-  hero_col1_1: '',
-  hero_col1_2: '',
-  hero_col1_3: '',
-  hero_col1_4: '',
-  hero_col2_1: '',
-  hero_col2_2: '',
-  hero_col2_3: '',
-  hero_col2_4: '',
-  hero_col3_1: '',
-  hero_col3_2: '',
-  hero_col3_3: '',
-  hero_col3_4: '',
+  hero_col1_1: '/sports/carrossel01.jpg',
+  hero_col1_2: '/sports/carrossel02.jpg',
+  hero_col1_3: '/sports/carrossel03.jpg',
+  hero_col1_4: '/sports/carrossel04.jpg',
+  hero_col2_1: '/sports/carrossel05.jpg',
+  hero_col2_2: '/sports/carrossel06.jpg',
+  hero_col2_3: '/sports/carrossel07.jpg',
+  hero_col2_4: '/sports/Carrossel08.png',
+  hero_col3_1: '/sports/carrossel09.jpg',
+  hero_col3_2: '/sports/carrossel10.png',
+  hero_col3_3: '/sports/carrossel01.jpg',
+  hero_col3_4: '/sports/carrossel02.jpg',
 
   // Events Section
   event_0: '',

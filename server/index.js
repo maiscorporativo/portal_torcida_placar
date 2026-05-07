@@ -58,7 +58,7 @@ async function autoMigrate() {
         token      VARCHAR(64)              NOT NULL PRIMARY KEY,
         user_id    INT                      NOT NULL,
         username   VARCHAR(255)             NOT NULL,
-        role       ENUM('admin','master')   NOT NULL,
+        role       ENUM('admin','master','marketing')   NOT NULL,
         created_at DATETIME DEFAULT         CURRENT_TIMESTAMP,
         expires_at DATETIME                 NOT NULL DEFAULT CURRENT_TIMESTAMP,
         INDEX idx_expires (expires_at)
@@ -68,6 +68,16 @@ async function autoMigrate() {
     // Limpar sessões expiradas
     const [del] = await pool.query('DELETE FROM user_sessions WHERE expires_at < NOW()');
     if (del.affectedRows > 0) console.log(`🗑️  ${del.affectedRows} sessão(ões) expirada(s) removida(s)`);
+
+    // Criar categories se não existir
+    const [checkCat] = await pool.query(
+      `SELECT COUNT(*) as c FROM information_schema.COLUMNS
+       WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'site_content' AND COLUMN_NAME = 'categories'`
+    );
+    if (checkCat[0].c === 0) {
+      await pool.query(`ALTER TABLE site_content ADD COLUMN categories LONGTEXT`);
+      console.log('✅ Coluna categories criada');
+    }
 
     // Criar category_icons se não existir
     const [checkRows] = await pool.query(
