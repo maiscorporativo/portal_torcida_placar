@@ -333,9 +333,25 @@ function MarketingEditor({ pkg, onUpdate, onCancel }: {
         <div>
           <Section title="Estratégia Visual & Hero" icon={Video} color="#3b82f6">
             <div style={{ display: 'grid', gap: 20 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '120px 1fr', gap: 16 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '150px 150px 1fr', gap: 16 }}>
                 <div style={fieldStyle}>
-                  <label style={labelStyle}>Destaque</label>
+                  <label style={labelStyle}>Template Esporte</label>
+                  <select 
+                    value={local.sportType || 'automobilismo'} 
+                    onChange={e => setLocal({...local, sportType: e.target.value})}
+                    style={IS}
+                    className="admin-input"
+                  >
+                    <option value="automobilismo">🏎️ Automobilismo</option>
+                    <option value="futebol">⚽ Futebol</option>
+                    <option value="tenis">🎾 Tênis</option>
+                    <option value="basquete">🏀 Basquete</option>
+                    <option value="lutas">🥊 Lutas (UFC/Boxe)</option>
+                    <option value="geral">🏆 Geral</option>
+                  </select>
+                </div>
+                <div style={fieldStyle}>
+                  <label style={labelStyle}>Destaque Hero</label>
                   <select 
                     value={local.heroType || 'video'} 
                     onChange={e => setLocal({...local, heroType: e.target.value as any})}

@@ -56,6 +56,7 @@ export interface TrendingPackage {
   galleryImages?: string; // Semicolon separated URLs
   highlights?: string; // Semicolon separated features/highlights
   sectionBackground?: string;
+  sportType?: string; // Ex: 'automobilismo', 'futebol', 'tenis', etc.
   /* ── New GP Experience LP Sections ── */
   cardsData?: string; // JSON string para Cards de Experiência
   programacaoData?: string; // JSON string para dias e programação

@@ -73,6 +73,7 @@ router.get('/events', (req, res) => {
 
 /* ── GET /api/content ─────────────────────────────────────────── */
 router.get('/', async (req, res) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   try {
     const [rows] = await pool.query('SELECT * FROM site_content WHERE id = 1');
     if (!rows.length) {
@@ -102,8 +103,22 @@ router.get('/', async (req, res) => {
 
 /* ── PUT /api/content ─────────────────────────────────────────── */
 router.put('/', requireAuth, async (req, res) => {
-  const { events, packages, testimonials, heroImages, categories, categoryIcons } = req.body;
   try {
+    const { events, packages, testimonials, heroImages, categories, categoryIcons } = req.body;
+
+    // Fetch current to preserve fields not sent by the caller (like testimonials from marketing panel)
+    const [current] = await pool.query('SELECT * FROM site_content WHERE id = 1');
+    const existing = current.length ? current[0] : {};
+
+    const finalEvents       = events       !== undefined ? JSON.stringify(events)       : (existing.events       || JSON.stringify(DEFAULT_EVENTS));
+    const finalPackages     = packages     !== undefined ? JSON.stringify(packages)     : (existing.packages     || JSON.stringify(DEFAULT_PACKAGES));
+    const finalTestimonials = testimonials !== undefined ? JSON.stringify(testimonials) : (existing.testimonials || JSON.stringify(DEFAULT_TESTIMONIALS));
+    const finalHeroImages   = heroImages   !== undefined ? JSON.stringify(heroImages)   : (existing.hero_images   || JSON.stringify(DEFAULT_HERO_IMAGES));
+    const finalCategories   = categories   !== undefined ? JSON.stringify(categories)   : (existing.categories   || JSON.stringify(DEFAULT_CATEGORIES));
+    const finalIcons        = categoryIcons !== undefined ? JSON.stringify(categoryIcons) : (existing.category_icons || '{}');
+
+    console.log(`[PUT /api/content] Updating content. Packages: ${packages?.length || '?'}`);
+
     await pool.query(
       `INSERT INTO site_content (id, events, packages, testimonials, hero_images, categories, category_icons)
        VALUES (1, ?, ?, ?, ?, ?, ?)
@@ -114,14 +129,7 @@ router.put('/', requireAuth, async (req, res) => {
          hero_images     = VALUES(hero_images),
          categories      = VALUES(categories),
          category_icons  = VALUES(category_icons)`,
-      [
-        JSON.stringify(events       ?? DEFAULT_EVENTS),
-        JSON.stringify(packages     ?? DEFAULT_PACKAGES),
-        JSON.stringify(testimonials ?? DEFAULT_TESTIMONIALS),
-        JSON.stringify(heroImages   ?? DEFAULT_HERO_IMAGES),
-        JSON.stringify(categories   ?? DEFAULT_CATEGORIES),
-        JSON.stringify(categoryIcons ?? {}),
-      ]
+      [finalEvents, finalPackages, finalTestimonials, finalHeroImages, finalCategories, finalIcons]
     );
     broadcastUpdate();
     res.json({ ok: true });

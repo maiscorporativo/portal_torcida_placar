@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  CheckCircle2, Plane, BedDouble, Ticket, 
-  MapPin, Calendar, ChevronDown, Users, 
+import {
+  CheckCircle2, Plane, BedDouble, Ticket,
+  MapPin, Calendar, ChevronDown, Users,
   MessageCircle, AlertTriangle, Zap, Trophy, Headset, ChevronRight
 } from 'lucide-react';
 import { useContentConfig } from '../hooks/useContentConfig';
@@ -12,7 +12,7 @@ import type { TrendingPackage } from '../types';
 const getYoutubeEmbedUrl = (url: string) => {
   if (!url) return '';
   if (!url.includes('youtube.com') && !url.includes('youtu.be')) return url;
-  
+
   let videoId = '';
   if (url.includes('watch?v=')) {
     videoId = url.split('watch?v=')[1].split('&')[0];
@@ -21,7 +21,7 @@ const getYoutubeEmbedUrl = (url: string) => {
   } else if (url.includes('embed/')) {
     videoId = url.split('embed/')[1].split('?')[0];
   }
-  
+
   return videoId ? `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=0&loop=1&modestbranding=1&playlist=${videoId}&rel=0&iv_load_policy=3&disablekb=1` : url;
 };
 
@@ -127,7 +127,7 @@ function Speedometer() {
         left: 'calc(50% - 6px)',
         boxShadow: '0 0 10px rgba(228,60,68,0.8)'
       }} />
-      
+
       {/* Speed text */}
       <div style={{ position: 'absolute', bottom: '15px', textAlign: 'center' }}>
         <div style={{ fontSize: '24px', fontWeight: 900, color: '#fff', lineHeight: '1' }}>{speed}</div>
@@ -137,8 +137,160 @@ function Speedometer() {
   );
 }
 
+/* --- Football Kick Animation Component --- */
+/* --- Sport Ball Scroll Animation Component --- */
+function SportBall({ sport }: { sport: string }) {
+  const [rotation, setRotation] = useState(0);
+  const [scrollPercent, setScrollPercent] = useState(0);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? scrollTop / docHeight : 0;
+      setScrollPercent(pct);
+      // Rotaciona 1080 graus (3 voltas completas) ao longo da página
+      setRotation(pct * 1080);
+    };
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  return (
+    <div style={{
+      position: 'fixed',
+      bottom: isMobile ? '0px' : '30px',
+      right: isMobile ? '0px' : '30px',
+      width: isMobile ? '300px' : '800px',
+      height: isMobile ? '300px' : '800px',
+      zIndex: 9999,
+      pointerEvents: 'none',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center'
+    }}>
+      {sport === 'tenis' && (
+        <img
+          src={fixImgPath('raquete.png')}
+          alt="Racket"
+          style={{
+            position: 'absolute',
+            width: '60%',
+            height: '60%',
+            objectFit: 'contain',
+            transform: isMobile
+              ? 'rotate(0deg) translate(100px, 90px) scale(0.8)'
+              : 'rotate(0deg) translate(320px, 270px) scale(0.8)',
+            filter: 'drop-shadow(0 15px 35px rgba(0,0,0,0.4))',
+            zIndex: -1
+          }}
+        />
+      )}
+      {sport === 'futebol' && (
+        <img
+          src={fixImgPath('jogador.png')}
+          alt="Player"
+          style={{
+            position: 'absolute',
+            width: '50%',
+            height: '50%',
+            objectFit: 'contain',
+            transform: isMobile
+              ? 'translate(110px, 75px) scale(1.0)'
+              : 'translate(300px, 200px) scale(1.2)',
+            filter: 'drop-shadow(0 15px 45px rgba(0,0,0,0.5))',
+            zIndex: -1
+          }}
+        />
+      )}
+      {sport === 'basquete' && (
+        <img
+          src={fixImgPath('basquete_player.png')}
+          alt="Basketball Player"
+          style={{
+            position: 'absolute',
+            width: '50%',
+            height: '50%',
+            objectFit: 'contain',
+            transform: isMobile
+              ? 'translate(130px, 70px) scale(1.2)'
+              : 'translate(400px, 170px) scale(1.5)',
+            filter: 'drop-shadow(0 15px 45px rgba(0,0,0,0.5))',
+            zIndex: -1
+          }}
+        />
+      )}
+      {sport === 'automobilismo' && (
+        <img
+          src={fixImgPath(`img_f1/f1_turnarround_000${Math.min(9, Math.max(0, Math.floor(scrollPercent * 10)))}_Camada-${Math.min(9, Math.max(0, Math.floor(scrollPercent * 10))) + 5}.png`)}
+          alt="F1 Car"
+          style={{
+            position: 'absolute',
+            width: '60%',
+            height: '60%',
+            objectFit: 'contain',
+            transform: isMobile
+              ? 'translate(70px, 100px) scale(0.8)'
+              : 'translate(240px, 320px) scale(0.5)',
+            filter: 'drop-shadow(0 15px 45px rgba(0,0,0,0.5))',
+            zIndex: -1
+          }}
+        />
+      )}
+      {sport === 'lutas' && (
+        <img
+          src={fixImgPath(`img_lutador/fighter_${Math.min(7, Math.max(1, Math.floor(scrollPercent * 7) + 1))}.png`)}
+          alt="Fighter"
+          style={{
+            position: 'absolute',
+            width: '50%',
+            height: '50%',
+            objectFit: 'contain',
+            transform: isMobile
+              ? 'translate(80px, 80px) scale(0.5)'
+              : 'translate(300px, 270px) scale(0.8)',
+            filter: 'drop-shadow(0 15px 45px rgba(0,0,0,0.5))',
+            zIndex: -1
+          }}
+        />
+      )}
+      {sport !== 'lutas' && sport !== 'automobilismo' && (
+        <img
+          src={fixImgPath(sport === 'tenis' ? 'tenis_ball.png' : sport === 'basquete' ? 'basquete_ball.png' : 'soccer_ball.png')}
+          alt={sport === 'tenis' ? 'Tennis Ball' : sport === 'basquete' ? 'Basketball' : 'Soccer Ball'}
+          style={{
+            width: sport === 'futebol'
+              ? (isMobile ? '30px' : '100px')
+              : sport === 'tenis'
+                ? (isMobile ? '15px' : '40px')
+                : (isMobile ? '30px' : '100px'),
+            height: sport === 'futebol'
+              ? (isMobile ? '30px' : '100px')
+              : sport === 'tenis'
+                ? (isMobile ? '15px' : '40px')
+                : (isMobile ? '30px' : '100px'),
+            objectFit: 'contain',
+            transform: isMobile
+              ? `${sport === 'futebol' ? 'translate(80px, 35px)' : sport === 'tenis' ? 'translate(50px, 100px)' : sport === 'basquete' ? 'translate(65px, -65px)' : ''} rotate(${rotation}deg)`
+              : `${sport === 'futebol' ? 'translate(180px, -10px)' : sport === 'tenis' ? 'translate(150px, 260px)' : sport === 'basquete' ? 'translate(160px, -230px)' : ''} rotate(${rotation}deg)`,
+            filter: 'drop-shadow(0 10px 30px rgba(0,0,0,0.5))'
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
 /* --- Package Navbar Component --- */
-function PackageNavbar({ onBook }: { onBook: () => void }) {
+function PackageNavbar({ onBook, isMobile }: { onBook: () => void, isMobile: boolean }) {
   const scrollTo = (id: string) => (e: React.MouseEvent) => {
     e.preventDefault();
     const el = document.getElementById(id);
@@ -146,15 +298,17 @@ function PackageNavbar({ onBook }: { onBook: () => void }) {
   };
 
   return (
-    <nav style={{ 
-      width: '100%', position: 'fixed', top: 0, zIndex: 1000, 
-      background: 'rgba(9, 9, 11, 0.8)', backdropFilter: 'blur(12px)', 
-      borderBottom: '1px solid rgba(255,255,255,0.05)' 
+    <nav style={{
+      width: '100%', position: 'fixed', top: 0, zIndex: 1000,
+      background: 'rgba(9, 9, 11, 0.8)', backdropFilter: 'blur(12px)',
+      borderBottom: '1px solid rgba(255,255,255,0.05)'
     }}>
       <div style={{ maxWidth: 1400, margin: '0 auto', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         {/* Logos */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 24, cursor: 'pointer' }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-          <img src="/logo-gpexperience.webp" alt="Torcida Placar" style={{ height: 35, objectFit: 'contain' }} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 12 : 24, cursor: 'pointer' }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+          <div style={{ fontSize: isMobile ? 18 : 24 }} className="font-black uppercase tracking-tighter text-white">
+            TORCIDA <span className="text-gold">PLACAR</span>
+          </div>
         </div>
 
         {/* Links */}
@@ -165,8 +319,8 @@ function PackageNavbar({ onBook }: { onBook: () => void }) {
         </div>
 
         {/* CTA */}
-        <button onClick={onBook} style={{ 
-          background: '#DFFE00', color: '#000', border: 'none', borderRadius: 8, padding: '10px 20px', fontSize: 13, fontWeight: 800, cursor: 'pointer',
+        <button onClick={onBook} style={{
+          background: '#DFFE00', color: '#000', border: 'none', borderRadius: 8, padding: isMobile ? '8px 12px' : '10px 20px', fontSize: isMobile ? 11 : 13, fontWeight: 800, cursor: 'pointer',
           textTransform: 'uppercase', letterSpacing: '0.05em'
         }}>
           Comprar Pacote
@@ -185,6 +339,7 @@ export default function PackageLP() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { packages, loading } = useContentConfig();
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [pkg, setPkg] = useState<TrendingPackage | null>(null);
   const [notFound, setNotFound] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -193,6 +348,12 @@ export default function PackageLP() {
   const [activePkgTab, setActivePkgTab] = useState(0); // Para a seção de Pacotes
   const [pricingMode, setPricingMode] = useState<'individual' | 'duplo'>('duplo');
   const mauticContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     if (!loading && packages.length > 0) {
@@ -224,21 +385,21 @@ export default function PackageLP() {
       const form = mauticContainerRef.current.querySelector('form');
       if (!form) return;
       const formName = form.getAttribute('data-mautic-form') || '';
-      
+
       // @ts-ignore
       window.MauticDomain = 'https://mkt.maiscorporativo.tur.br';
       // @ts-ignore
       if (typeof window.MauticLang === 'undefined') { window.MauticLang = { submittingMessage: 'Enviando...' }; }
       // @ts-ignore
       if (typeof window.MauticFormCallback === 'undefined') { window.MauticFormCallback = {}; }
-      
+
       // @ts-ignore
       window.MauticFormCallback[formName] = {
         onResponse: function (response: any) {
           if (response.success) {
             handleFormSuccess();
-          } else { 
-            setSubmitting(false); 
+          } else {
+            setSubmitting(false);
           }
         }
       };
@@ -250,7 +411,7 @@ export default function PackageLP() {
           inputs.forEach((input: any) => {
             const nameAttr = input.getAttribute('name');
             const nameMatch = nameAttr ? nameAttr.match(/mauticform\[(.*?)\]/) : null;
-            
+
             if (nameMatch) {
               const fieldName = nameMatch[1];
               if (['formId', 'return', 'formName'].includes(fieldName)) return;
@@ -269,8 +430,8 @@ export default function PackageLP() {
           clintData.append('origem_lead', 'Landing Page Experiência');
           clintData.append('url_conversao', window.location.href);
 
-          fetch(pkg.webhookClint, { 
-            method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: clintData.toString() 
+          fetch(pkg.webhookClint, {
+            method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: clintData.toString()
           }).catch(e => console.error('Erro Clint:', e));
         }
         setShowSuccess(true);
@@ -298,7 +459,7 @@ export default function PackageLP() {
 
       const btn = form.querySelector('button[type="submit"]');
       if (btn) {
-        btn.addEventListener('click', () => { 
+        btn.addEventListener('click', () => {
           setTimeout(() => {
             const hasErrors = form.querySelectorAll('.mauticform-has-error').length > 0;
             if (form.checkValidity() && !hasErrors) setSubmitting(true);
@@ -322,12 +483,12 @@ export default function PackageLP() {
         if (pForm && pageWrapper) {
           const rows = Array.from(pageWrapper.querySelectorAll('.mauticform-row:not(.mauticform-button-wrapper):not(.mauticform-radiogrp)'));
           for (let i = 0; i < rows.length; i += 2) {
-            if (rows[i] && rows[i+1]) {
+            if (rows[i] && rows[i + 1]) {
               const gridRow = document.createElement('div');
               gridRow.className = 'mauticform-grid-row';
               rows[i].parentNode?.insertBefore(gridRow, rows[i]);
               gridRow.appendChild(rows[i]);
-              gridRow.appendChild(rows[i+1]);
+              gridRow.appendChild(rows[i + 1]);
             }
           }
           const radioGroups = pForm.querySelectorAll('.mauticform-radiogrp');
@@ -381,10 +542,29 @@ export default function PackageLP() {
     { titulo: 'Suporte 24/7', descricao: 'Nossa equipe está disponível antes, durante e após o evento para garantir sua satisfação.', icone: 'Headset' }
   ]);
 
+  const sport = pkg.sportType || 'automobilismo';
+
+  const theme = {
+    primary: '#DFFE00',
+    accent: sport === 'automobilismo' ? 'rgba(228,60,68,0.15)' :
+      sport === 'futebol' ? 'rgba(34,197,94,0.15)' :
+        sport === 'tenis' ? 'rgba(234,88,12,0.15)' :
+          sport === 'lutas' ? 'rgba(220,38,38,0.2)' :
+            'rgba(59,130,246,0.15)',
+    heroTitle: sport === 'automobilismo' ? 'Seu lugar no grid' :
+      sport === 'futebol' ? 'Viva a paixão do estádio' :
+        sport === 'tenis' ? 'A emoção da quadra central' :
+          sport === 'basquete' ? 'Sinta a energia da quadra' :
+            sport === 'lutas' ? 'No coração do octógono' :
+              'A melhor experiência esportiva',
+    defaultTag: sport === 'automobilismo' ? '110ª EDIÇÃO' : 'EVENTO EXCLUSIVO'
+  };
+
   return (
     <div style={{ background: '#050505', color: '#fff', fontFamily: 'Montserrat, sans-serif', minHeight: '100vh', overflowX: 'hidden' }}>
-      <PackageNavbar onBook={() => document.getElementById('conversion-section')?.scrollIntoView({ behavior: 'smooth' })} />
-      <Speedometer />
+      <PackageNavbar onBook={() => document.getElementById('conversion-section')?.scrollIntoView({ behavior: 'smooth' })} isMobile={isMobile} />
+      {/* {sport === 'automobilismo' && <Speedometer />} */}
+      {(sport === 'futebol' || sport === 'tenis' || sport === 'basquete' || sport === 'lutas' || sport === 'automobilismo') && <SportBall sport={sport} isMobile={isMobile} />}
 
       {/* --- HERO SECTION --- */}
       <section style={{ position: 'relative', height: '100vh', minHeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
@@ -395,7 +575,7 @@ export default function PackageLP() {
             <div style={{ width: '100%', height: '100%', position: 'relative', background: '#050505' }}>
               <img src={fixImgPath(pkg.img)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0, zIndex: -1, opacity: 0.5 }} />
               {pkg.videoUrl.includes('youtube.com') || pkg.videoUrl.includes('youtu.be') ? (
-                <iframe 
+                <iframe
                   src={getYoutubeEmbedUrl(pkg.videoUrl)}
                   style={{ width: '100vw', height: '56.25vw', minHeight: '100vh', minWidth: '177.77vh', position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', pointerEvents: 'none' }}
                   frameBorder="0" allow="autoplay; encrypted-media"
@@ -414,17 +594,17 @@ export default function PackageLP() {
 
         <div className="container animate-fade-in" style={{ maxWidth: 1000, margin: '0 auto', padding: '0 20px', position: 'relative', zIndex: 10 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, marginBottom: 16 }}>
-            <span style={{ fontSize: 12, fontWeight: 900, color: '#DFFE00', letterSpacing: '0.15em' }}>{pkg.tag || '110ª EDIÇÃO'}</span>
+            <span style={{ fontSize: 12, fontWeight: 900, color: theme.primary, letterSpacing: '0.15em' }}>{pkg.tag || theme.defaultTag}</span>
           </div>
           <h1 style={{ fontSize: 'clamp(3rem, 6vw, 5.5rem)', fontWeight: 900, lineHeight: 1.1, margin: '0 0 24px', textShadow: '0 10px 40px rgba(0,0,0,0.5)' }}>
-            Seu lugar no grid
+            {pkg.title || theme.heroTitle}
           </h1>
           <p style={{ fontSize: 'clamp(1.1rem, 2vw, 1.3rem)', lineHeight: 1.6, color: '#ccc', maxWidth: 650, margin: '0 auto 40px', fontWeight: 400 }}>
             {pkg.description || 'Viva a emoção da corrida com um pacote completo: passagens aéreas, hospedagem e ingressos garantidos, além de experiências exclusivas que vão muito além da corrida.'}
           </p>
-          <button 
+          <button
             onClick={() => document.getElementById('pacotes')?.scrollIntoView({ behavior: 'smooth' })}
-            style={{ background: '#DFFE00', color: '#000', fontWeight: 800, fontSize: 15, padding: '16px 36px', borderRadius: 8, cursor: 'pointer', border: 'none', display: 'inline-flex', alignItems: 'center', gap: 10, transition: 'transform 0.2s' }}
+            style={{ background: '#DFFE00', color: '#000', fontWeight: 800, fontSize: isMobile ? 14 : 15, padding: isMobile ? '14px 28px' : '16px 36px', borderRadius: 8, cursor: 'pointer', border: 'none', display: 'inline-flex', alignItems: 'center', gap: 10, transition: 'transform 0.2s' }}
             onMouseOver={e => e.currentTarget.style.transform = 'scale(1.05)'}
             onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
           >
@@ -437,13 +617,13 @@ export default function PackageLP() {
       <section style={{ padding: '0 20px', position: 'relative', zIndex: 20, marginTop: '-80px', marginBottom: '80px' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
           {cards.map((c: any, i: number) => (
-            <div key={i} style={{ 
-              background: '#0a0a0a', border: '1px solid #222', borderRadius: 16, padding: '32px', 
+            <div key={i} style={{
+              background: '#0a0a0a', border: '1px solid #222', borderRadius: 16, padding: '32px',
               boxShadow: '0 20px 40px rgba(0,0,0,0.5)', transition: 'border-color 0.3s',
               cursor: 'default'
             }}
-            onMouseOver={e => e.currentTarget.style.borderColor = '#4ade80'}
-            onMouseOut={e => e.currentTarget.style.borderColor = '#222'}
+              onMouseOver={e => e.currentTarget.style.borderColor = '#4ade80'}
+              onMouseOut={e => e.currentTarget.style.borderColor = '#222'}
             >
               <div style={{ width: 48, height: 48, background: '#DFFE00', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24 }}>
                 {c.icone === 'Zap' ? <Zap size={24} color="#fff" /> : c.icone === 'Trophy' ? <Trophy size={24} color="#fff" /> : <Headset size={24} color="#fff" />}
@@ -456,22 +636,26 @@ export default function PackageLP() {
       </section>
 
       {/* --- PROGRAMAÇÃO --- */}
-      <section id="programacao" style={{ 
-        position: 'relative', padding: '100px 20px', background: '#050505', overflow: 'hidden'
+      <section id="programacao" style={{
+        position: 'relative', padding: isMobile ? '60px 20px' : '100px 20px', background: '#050505', overflow: 'hidden'
       }}>
         {/* Local Background Video */}
-        <video 
-          autoPlay muted loop playsInline 
-          style={{ 
-            position: 'absolute', inset: 0, width: '100%', height: '100%', 
-            objectFit: 'cover', opacity: 0.15, pointerEvents: 'none' 
-          }}
-        >
-          <source src="/flag_quadriculada.mp4" type="video/mp4" />
-        </video>
+        {sport === 'automobilismo' ? (
+          <video
+            autoPlay muted loop playsInline
+            style={{
+              position: 'absolute', inset: 0, width: '100%', height: '100%',
+              objectFit: 'cover', opacity: 0.15, pointerEvents: 'none'
+            }}
+          >
+            <source src="/flag_quadriculada.mp4" type="video/mp4" />
+          </video>
+        ) : (
+          <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at center, #111 0%, #050505 100%)', opacity: 0.5 }}></div>
+        )}
 
         {/* Red speed gradient */}
-        <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: '50%', background: 'linear-gradient(to right, transparent, rgba(228,60,68,0.15))', pointerEvents: 'none' }} />
+        <div style={{ position: 'absolute', top: 0, right: 0, bottom: 0, width: '50%', background: `linear-gradient(to right, transparent, ${theme.accent})`, pointerEvents: 'none' }} />
 
         <div style={{ maxWidth: 1000, margin: '0 auto', position: 'relative', zIndex: 10 }}>
           <h2 style={{ fontSize: 'clamp(2.5rem, 5vw, 3.5rem)', fontWeight: 900, margin: '0 0 8px' }}>
@@ -481,10 +665,10 @@ export default function PackageLP() {
 
           <div style={{ display: 'flex', gap: 12, marginBottom: 40, flexWrap: 'wrap' }}>
             {programacao.map((p: any, i: number) => (
-              <button 
+              <button
                 key={i}
                 onClick={() => setActiveTab(i)}
-                style={{ 
+                style={{
                   background: activeTab === i ? '#DFFE00' : 'transparent',
                   color: activeTab === i ? '#000' : '#888',
                   border: `1px solid ${activeTab === i ? '#DFFE00' : '#333'}`,
@@ -500,7 +684,7 @@ export default function PackageLP() {
 
           <div style={{ background: '#0a0a0a', border: '1px solid #222', borderRadius: 16, padding: '40px', minHeight: 200 }}>
             <h3 style={{ fontSize: 24, color: '#DFFE00', fontWeight: 800, margin: '0 0 24px' }}>{programacao[activeTab]?.titulo_dia || programacao[activeTab]?.data}</h3>
-            
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {(programacao[activeTab]?.atividades || []).length > 0 ? (
                 programacao[activeTab]?.atividades.map((ativ: any, i: number) => (
@@ -518,17 +702,17 @@ export default function PackageLP() {
       </section>
 
       {/* --- PACOTES --- */}
-      <section id="pacotes" style={{ padding: '100px 20px', background: '#0a0a0b' }}>
+      <section id="pacotes" style={{ padding: isMobile ? '60px 20px' : '100px 20px', background: '#0a0a0b' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 60 }}>
             <h2 style={{ fontSize: 'clamp(2.5rem, 5vw, 3.5rem)', fontWeight: 900, margin: '0 0 16px' }}>Pacotes de <span style={{ color: '#DFFE00' }}>Viagem Completos</span></h2>
             <p style={{ fontSize: 16, color: '#aaa', maxWidth: 600, margin: '0 auto' }}>Voe com tudo incluído. Hospedagem, transporte e ingressos em um único pacote.</p>
-            
+
             {/* Pricing Toggle */}
             <div style={{ marginTop: 40, display: 'inline-flex', background: '#111', padding: 6, borderRadius: 100, border: '1px solid #222' }}>
-              <button 
+              <button
                 onClick={() => setPricingMode('individual')}
-                style={{ 
+                style={{
                   background: pricingMode === 'individual' ? '#DFFE00' : 'transparent',
                   color: pricingMode === 'individual' ? '#000' : '#888',
                   border: 'none', borderRadius: 100, padding: '10px 24px', fontSize: 13, fontWeight: 800, cursor: 'pointer', transition: 'all 0.3s'
@@ -536,9 +720,9 @@ export default function PackageLP() {
               >
                 Quarto Individual
               </button>
-              <button 
+              <button
                 onClick={() => setPricingMode('duplo')}
-                style={{ 
+                style={{
                   background: pricingMode === 'duplo' ? '#DFFE00' : 'transparent',
                   color: pricingMode === 'duplo' ? '#000' : '#888',
                   border: 'none', borderRadius: 100, padding: '10px 24px', fontSize: 13, fontWeight: 800, cursor: 'pointer', transition: 'all 0.3s'
@@ -549,11 +733,11 @@ export default function PackageLP() {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(280px, 1fr))', gap: 24 }}>
             {(() => {
               const data = pacotes && !Array.isArray(pacotes) ? pacotes : { opcoes_hospedagem: Array.isArray(pacotes) ? pacotes : [], inclusos: [] };
               const options = data.opcoes_hospedagem || [];
-              
+
               if (options.length === 0) {
                 return <div style={{ gridColumn: '1/-1', textAlign: 'center', color: '#555', padding: 40 }}>Nenhum pacote configurado.</div>;
               }
@@ -564,25 +748,25 @@ export default function PackageLP() {
                 const showInclusos = (op.inclusos && op.inclusos.length > 0) ? op.inclusos : (data.inclusos || []);
 
                 return (
-                  <div key={i} style={{ 
-                    background: '#050505', border: '1px solid #222', borderRadius: 24, padding: '40px', 
+                  <div key={i} style={{
+                    background: '#050505', border: '1px solid #222', borderRadius: 24, padding: '40px',
                     display: 'flex', flexDirection: 'column', transition: 'transform 0.3s, border-color 0.3s',
                     position: 'relative', overflow: 'hidden'
                   }}
-                  className="package-card-hover"
+                    className="package-card-hover"
                   >
                     <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: 4, background: i === 0 ? '#DFFE00' : '#fbbf24' }} />
-                    
+
                     <h3 style={{ fontSize: 24, fontWeight: 900, margin: '0 0 8px', color: '#fff' }}>{op.nome || op.tipo}</h3>
                     <p style={{ color: '#888', fontSize: 14, lineHeight: 1.5, marginBottom: 24 }}>{op.descricao_card || 'Experiência completa com todo o conforto e exclusividade.'}</p>
 
                     <div style={{ borderTop: '1px solid #222', borderBottom: '1px solid #222', margin: '0 0 32px', padding: '24px 0' }}>
                       <div style={{ fontSize: 13, color: '#666', fontWeight: 800, textTransform: 'uppercase', marginBottom: 8 }}>{parcelas}x de</div>
-                      <div style={{ fontSize: 40, fontWeight: 900, color: i === 0 ? '#DFFE00' : '#fbbf24', display: 'flex', alignItems: 'baseline', gap: 6 }}>
-                        <span style={{ fontSize: 20 }}>{op.moeda || 'USD'}</span>
-                        <span style={{ fontSize: 48 }}>{price || op.valor_parcela || op.preço || '---'}</span>
+                      <div style={{ fontSize: isMobile ? 28 : 40, fontWeight: 900, color: i === 0 ? '#DFFE00' : '#fbbf24', display: 'flex', alignItems: 'baseline', gap: 6, flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: isMobile ? 16 : 20 }}>{op.moeda || 'USD'}</span>
+                        <span style={{ fontSize: isMobile ? 32 : 48 }}>{price || op.valor_parcela || op.preço || '---'}</span>
                       </div>
-                      <div style={{ fontSize: 12, color: '#555', marginTop: 8 }}>por pessoa em quarto {pricingMode}</div>
+                      <div style={{ fontSize: 11, color: '#555', marginTop: 8 }}>por pessoa em quarto {pricingMode}</div>
                     </div>
 
                     <div style={{ flex: 1, marginBottom: 32 }}>
@@ -600,12 +784,12 @@ export default function PackageLP() {
                       </div>
                     </div>
 
-                    <button 
+                    <button
                       onClick={() => document.getElementById('conversion-section')?.scrollIntoView({ behavior: 'smooth' })}
-                      style={{ 
-                        background: i === 0 ? '#DFFE00' : '#111', 
-                        color: i === 0 ? '#000' : '#fff', border: i === 0 ? 'none' : '1px solid #333', 
-                        borderRadius: 12, padding: '16px', fontSize: 14, fontWeight: 800, 
+                      style={{
+                        background: i === 0 ? '#DFFE00' : '#111',
+                        color: i === 0 ? '#000' : '#fff', border: i === 0 ? 'none' : '1px solid #333',
+                        borderRadius: 12, padding: '16px', fontSize: 14, fontWeight: 800,
                         cursor: 'pointer', transition: 'all 0.2s', textTransform: 'uppercase'
                       }}
                       onMouseOver={e => {
@@ -622,7 +806,7 @@ export default function PackageLP() {
               });
             })()}
           </div>
-          
+
           <style>{`
             .package-card-hover:hover { transform: translateY(-10px); border-color: rgba(228,60,68,0.4) !important; }
           `}</style>
@@ -650,11 +834,11 @@ export default function PackageLP() {
       </section>
 
       {/* --- EXPERIÊNCIA --- */}
-      <section id="experiencia" style={{ padding: '100px 20px', background: '#050505' }}>
-        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center' }}>
+      <section id="experiencia" style={{ padding: isMobile ? '60px 20px' : '100px 20px', background: '#050505' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 32 : 60, alignItems: 'center' }}>
           <div>
-            <h2 style={{ fontSize: 'clamp(2.5rem, 4vw, 3.5rem)', fontWeight: 900, margin: '0 0 24px', lineHeight: 1.1 }}>Uma Experiência <span style={{ color: '#DFFE00' }}>Inesquecível</span></h2>
-            <div style={{ fontSize: 16, color: '#aaa', lineHeight: 1.8 }} dangerouslySetInnerHTML={{ __html: pkg.experienciaSection || 'Nossos pacotes garantem que você vivencie cada momento memorável com conforto, segurança e acesso a áreas exclusivas que a maioria dos visitantes nunca experimenta.' }} />
+            <h2 style={{ fontSize: isMobile ? '2.2rem' : 'clamp(2.5rem, 4vw, 3.5rem)', fontWeight: 900, margin: '0 0 24px', lineHeight: 1.1 }}>Uma Experiência <span style={{ color: '#DFFE00' }}>Inesquecível</span></h2>
+            <div style={{ fontSize: isMobile ? 14 : 16, color: '#aaa', lineHeight: 1.8 }} dangerouslySetInnerHTML={{ __html: pkg.experienciaSection || 'Nossos pacotes garantem que você vivencie cada momento memorável com conforto, segurança e acesso a áreas exclusivas que a maioria dos visitantes nunca experimenta.' }} />
           </div>
           <div style={{ display: 'grid', gap: 20 }}>
             {pkg.galleryImages ? (
@@ -669,19 +853,19 @@ export default function PackageLP() {
       </section>
 
       {/* --- PARCERIA --- */}
-      <section style={{ padding: '100px 20px', background: '#111', borderTop: '1px solid #222', borderBottom: '1px solid #222', textAlign: 'center' }}>
+      <section style={{ padding: isMobile ? '60px 20px' : '100px 20px', background: '#111', borderTop: '1px solid #222', borderBottom: '1px solid #222', textAlign: 'center' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
-          <p style={{ fontSize: 14, color: '#DFFE00', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Realizado por:</p>
-          <h2 style={{ fontSize: 'clamp(2.5rem, 4vw, 3.5rem)', fontWeight: 900, color: '#fff', margin: '0 0 16px' }}>Uma Parceria de Referência</h2>
-          <p style={{ fontSize: 18, color: '#aaa', maxWidth: 700, margin: '0 auto 60px', lineHeight: 1.6 }}>
+          <p style={{ fontSize: 12, color: '#DFFE00', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Realizado por:</p>
+          <h2 style={{ fontSize: isMobile ? '2rem' : 'clamp(2.5rem, 4vw, 3.5rem)', fontWeight: 900, color: '#fff', margin: '0 0 16px' }}>Uma Parceria de Referência</h2>
+          <p style={{ fontSize: isMobile ? 15 : 18, color: '#aaa', maxWidth: 700, margin: '0 auto 40px', lineHeight: 1.6 }}>
             Duas empresas líderes unidas para levar você ao espetáculo mais emocionante do automobilismo mundial.
           </p>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 30, textAlign: 'left' }}>
-            
+
             {/* Card Mais Corporativo */}
             <div style={{ background: '#050505', border: '1px solid #222', borderRadius: 24, padding: '40px', display: 'flex', flexDirection: 'column', transition: 'border-color 0.3s' }} onMouseOver={e => e.currentTarget.style.borderColor = '#DFFE00'} onMouseOut={e => e.currentTarget.style.borderColor = '#222'}>
-              <img src="/logo_mais.png" alt="Mais Corporativo" style={{ height: 40, objectFit: 'contain', marginBottom: 24, alignSelf: 'flex-start' }} />
+              <img src="/logo_mais.png" alt="Mais Corporativo" style={{ height: 65, objectFit: 'contain', marginBottom: 24, alignSelf: 'flex-start' }} />
               <p style={{ color: '#aaa', fontSize: 16, lineHeight: 1.6, flex: 1, marginBottom: 32 }}>
                 Especialistas em viagens e experiências corporativas de alto padrão. Do planejamento ao retorno, cuidamos de cada detalhe para que você viva momentos inesquecíveis com segurança e conforto.
               </p>
@@ -708,12 +892,12 @@ export default function PackageLP() {
       {/* --- CONVERSION / FORM SECTION --- */}
       <section id="conversion-section" style={{ padding: '120px 20px', background: '#0a0a0b', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', height: 1, background: 'linear-gradient(to right, transparent, #DFFE00, transparent)' }} />
-        
-        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: 80, alignItems: 'center' }}>
-          <div>
-            <h2 style={{ fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 900, lineHeight: 1.1, marginBottom: 32 }}>Garanta seu lugar na <span style={{ color: '#DFFE00' }}>História.</span></h2>
-            <p style={{ fontSize: 20, color: '#888', lineHeight: 1.6, marginBottom: 48 }}>Preencha os dados ao lado e receba um atendimento personalizado de nossos especialistas em eventos esportivos.</p>
-            
+
+        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(400px, 1fr))', gap: isMobile ? 40 : 80, alignItems: 'center' }}>
+          <div style={{ textAlign: isMobile ? 'center' : 'left' }}>
+            <h2 style={{ fontSize: isMobile ? '2.5rem' : 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 900, lineHeight: 1.1, marginBottom: isMobile ? 16 : 32 }}>Garanta seu lugar na <span style={{ color: '#DFFE00' }}>História.</span></h2>
+            <p style={{ fontSize: isMobile ? 16 : 20, color: '#888', lineHeight: 1.6, marginBottom: isMobile ? 32 : 48 }}>Preencha os dados ao lado e receba um atendimento personalizado de nossos especialistas em eventos esportivos.</p>
+
             <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
               {[
                 'Atendimento humanizado 24h durante o evento',
@@ -731,7 +915,7 @@ export default function PackageLP() {
           </div>
 
           <div style={{ position: 'relative' }}>
-            <div className="glass-form" style={{ background: '#0a0a0a', border: '1px solid #222', borderRadius: 32, padding: '40px' }}>
+            <div className="glass-form" style={{ background: '#0a0a0a', border: '1px solid #222', borderRadius: 32, padding: isMobile ? '24px' : '40px' }}>
               <div style={{ textAlign: 'center', marginBottom: 32 }}>
                 <h3 style={{ fontSize: 24, fontWeight: 900, margin: 0 }}>Cotação de Pacote</h3>
                 <p style={{ fontSize: 14, color: '#666', marginTop: 8 }}>Mantenha seus dados atualizados para contato.</p>
@@ -757,9 +941,11 @@ export default function PackageLP() {
         </div>
       </section>
 
-      <footer style={{ padding: '80px 40px', textAlign: 'center', borderTop: '1px solid #111' }}>
-        <img src="/logo.png" alt="Torcida Placar" style={{ height: 40, margin: '0 auto 32px', opacity: 0.5 }} onError={e => e.currentTarget.style.display = 'none'} />
-        <p style={{ fontSize: 13, color: '#444', maxWidth: 800, margin: '0 auto', lineHeight: 1.6 }}>
+      <footer style={{ padding: isMobile ? '40px 20px' : '80px 40px', textAlign: 'center', borderTop: '1px solid #111' }}>
+        <div className="text-2xl font-black uppercase tracking-tighter text-white" style={{ marginBottom: 16, opacity: 0.5, fontSize: isMobile ? 18 : 24 }}>
+          TORCIDA <span className="text-gold">PLACAR</span>
+        </div>
+        <p style={{ fontSize: isMobile ? 11 : 13, color: '#444', maxWidth: 800, margin: '0 auto', lineHeight: 1.6 }}>
           © Todos os direitos reservados Mais Corporativo - 2026 - Não somos afiliados à IndyCar ou Penske Corporation. Somos apenas uma empresa de turismo que oferece pacotes para a corrida.
         </p>
       </footer>
@@ -790,6 +976,12 @@ export default function PackageLP() {
         .mautic-premium-form .mauticform-button { width: 100% !important; height: 54px !important; background: #DFFE00 !important; border: none !important; border-radius: 12px !important; color: #000 !important; font-size: 16px !important; font-weight: 900 !important; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; transition: all 0.3s; margin-top: 12px; }
         .mautic-premium-form .mauticform-button:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(228,60,68,0.3); }
         .mautic-premium-form .mauticform-description, .mautic-premium-form .mauticform-helpmessage { display: none !important; }
+
+        @media (max-width: 768px) {
+          .mauticform-grid-row { display: flex !important; flex-direction: column !important; gap: 0 !important; }
+          .mautic-premium-form .mauticform-button { height: 50px !important; font-size: 14px !important; }
+          section { padding-left: 15px !important; padding-right: 15px !important; }
+        }
       `}</style>
     </div>
   );

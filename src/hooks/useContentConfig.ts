@@ -7,6 +7,11 @@ import {
 
 /* ---------- Session token helper ---------- */
 function getSessionToken(): string {
+  const path = typeof window !== 'undefined' ? window.location.pathname : '';
+  if (path.startsWith('/marketing')) return localStorage.getItem('emais_marketing_token') || '';
+  if (path.startsWith('/admin-master')) return localStorage.getItem('emais_master_token') || '';
+  if (path.startsWith('/admin')) return localStorage.getItem('emais_admin_token') || '';
+
   return localStorage.getItem('emais_admin_token')
       || localStorage.getItem('emais_master_token')
       || localStorage.getItem('emais_marketing_token')
@@ -223,6 +228,7 @@ export function useContentConfig() {
     } catch (err: any) {
       console.warn('[useContentConfig] API save failed:', err);
       setSaveError(err.message || 'Erro desconhecido ao salvar');
+      throw err;
     } finally {
       isSaving.current = false;
       setSaving(false);
