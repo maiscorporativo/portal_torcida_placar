@@ -5,7 +5,7 @@ import {
   Upload, Download, Eye, Shield, X, Plus, Trash2,
   ChevronUp, ChevronDown, CalendarDays, MapPin, Tag,
   DollarSign, FileText, Plane, BedDouble, Ticket, Save,
-  Flame, AlertTriangle, Award, Type, Package, ImageIcon as ImgIcon, CheckCircle2, XCircle, Globe2, Clock, GripVertical, Star
+  Flame, AlertTriangle, Award, Type, Package, ImageIcon as ImgIcon, CheckCircle2, XCircle, Globe2, Clock, GripVertical, Copy, Link as LinkIcon
 } from 'lucide-react';
 import {
   DndContext,
@@ -30,6 +30,8 @@ import { useContentConfig } from '../hooks/useContentConfig';
 import type { TrendingPackage } from '../types';
 import { useToast } from '../components/ui/ToastProvider';
 import { useDialog } from '../components/ui/DialogProvider';
+import LPContentEditor from './LPEditor';
+import { slugify, sanitizeSlugInput, uniqueSlug } from '../utils/slug';
 
 
 /* ── Auth ───────────────────────────────────────────────────────── */
@@ -43,7 +45,7 @@ function ImgPreview({ src, size = 80 }: { src: string; size?: number }) {
   const [err, setErr] = useState(false);
   if (!src || err) {
     return (
-      <div style={{ width: size, height: size, borderRadius: 8, background: '#002b52', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid #333333' }}>
+      <div style={{ width: size, height: size, borderRadius: 8, background: '#1a1a1a', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, border: '1px solid #333333' }}>
         <ImageIcon size={size / 3} color="#737373" />
       </div>
     );
@@ -68,11 +70,11 @@ function Field({ label, icon, value, onChange, type = 'text', mono }: {
         value={value}
         onChange={e => onChange(e.target.value)}
         style={{
-          background: '#001529', border: '1px solid #333333', borderRadius: 7,
+          background: '#050505', border: '1px solid #333333', borderRadius: 7,
           color: '#e8edf2', fontSize: mono ? 11 : 13, fontFamily: mono ? 'monospace' : 'inherit',
           padding: '9px 12px', outline: 'none', width: '100%', boxSizing: 'border-box',
         }}
-        onFocus={e => { e.target.style.borderColor = '#f7ad40'; }}
+        onFocus={e => { e.target.style.borderColor = '#DFFE00'; }}
         onBlur={e => { e.target.style.borderColor = '#333333'; }}
       />
     </div>
@@ -90,11 +92,11 @@ function Textarea({ label, icon, value, onChange, rows = 3 }: {
         onChange={e => onChange(e.target.value)}
         rows={rows}
         style={{
-          background: '#001529', border: '1px solid #333333', borderRadius: 7,
+          background: '#050505', border: '1px solid #333333', borderRadius: 7,
           color: '#e8edf2', fontSize: 13, padding: '9px 12px', outline: 'none',
           width: '100%', boxSizing: 'border-box', resize: 'vertical', fontFamily: 'inherit',
         }}
-        onFocus={e => { e.target.style.borderColor = '#f7ad40'; }}
+        onFocus={e => { e.target.style.borderColor = '#DFFE00'; }}
         onBlur={e => { e.target.style.borderColor = '#333333'; }}
       />
     </div>
@@ -102,27 +104,15 @@ function Textarea({ label, icon, value, onChange, rows = 3 }: {
 }
 
 /* ── UI Helpers for Sections ── */
-function AdminSection({ title, icon: Icon, children, color = '#f7ad40' }: { title: string; icon: any; children: React.ReactNode; color?: string }) {
+function AdminSection({ title, icon: Icon, children, color = '#DFFE00' }: { title: string; icon: any; children: React.ReactNode; color?: string }) {
   return (
-    <div style={{ marginTop: 24, background: '#001a33', border: '1px solid #003866', borderRadius: 12, padding: 20 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, borderBottom: '1px solid #002b52', paddingBottom: 12 }}>
+    <div style={{ marginTop: 24, background: '#0a0a0a', border: '1px solid #222', borderRadius: 12, padding: 20 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, borderBottom: '1px solid #1a1a1a', paddingBottom: 12 }}>
         <div style={{ width: 32, height: 32, background: `${color}1a`, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Icon size={16} color={color} />
         </div>
         <h4 style={{ fontSize: 12, fontWeight: 800, color: '#fff', textTransform: 'uppercase', letterSpacing: '0.05em', margin: 0 }}>{title}</h4>
       </div>
-      {children}
-    </div>
-  );
-}
-
-function AdminSubSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div style={{ marginTop: 16, padding: 16, background: '#002042', borderRadius: 10, border: '1px solid #002b52' }}>
-      <h5 style={{ fontSize: 10, fontWeight: 800, color: '#737373', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
-        <div style={{ width: 4, height: 4, borderRadius: '50%', background: '#f7ad40' }}></div>
-        {title}
-      </h5>
       {children}
     </div>
   );
@@ -217,7 +207,7 @@ function ImageUploadField({ label, labelIcon, value, onChange }: {
       <div
         onDragOver={e => e.preventDefault()}
         onDrop={handleDrop}
-        style={{ display: 'flex', gap: 12, alignItems: 'flex-start', background: '#001529', border: '1px dashed #333333', borderRadius: 8, padding: 10 }}
+        style={{ display: 'flex', gap: 12, alignItems: 'flex-start', background: '#050505', border: '1px dashed #333333', borderRadius: 8, padding: 10 }}
       >
         <div style={{ flexShrink: 0 }}>
           <ImgPreview src={value} size={72} />
@@ -231,8 +221,8 @@ function ImageUploadField({ label, labelIcon, value, onChange }: {
               disabled={uploading}
               style={{
                 display: 'flex', alignItems: 'center', gap: 6, padding: '8px 14px',
-                background: uploading ? '#002b52' : '#1f1f1f',
-                color: uploading ? '#737373' : '#f7ad40',
+                background: uploading ? '#1a1a1a' : '#1f1f1f',
+                color: uploading ? '#737373' : '#DFFE00',
                 border: '1px solid #333333', borderRadius: 7,
                 fontSize: 12, fontWeight: 600, cursor: uploading ? 'wait' : 'pointer',
               }}
@@ -268,11 +258,11 @@ function ImageUploadField({ label, labelIcon, value, onChange }: {
               placeholder={isBase64 ? '(imagem legada — re-envie)' : 'https://... (ou arraste/clique acima)'}
               onChange={e => onChange(e.target.value)}
               style={{
-                background: '#002042', border: '1px solid #333333', borderRadius: 7,
+                background: '#111111', border: '1px solid #333333', borderRadius: 7,
                 color: '#e8edf2', fontSize: 11, fontFamily: 'monospace',
                 padding: '7px 32px 7px 10px', outline: 'none', width: '100%', boxSizing: 'border-box',
               }}
-              onFocus={e => { e.target.style.borderColor = '#f7ad40'; }}
+              onFocus={e => { e.target.style.borderColor = '#DFFE00'; }}
               onBlur={e => { e.target.style.borderColor = '#333333'; }}
             />
             {hasValue && !isBase64 && (
@@ -377,7 +367,7 @@ function HeroImageRow({ imgKey, label }: { imgKey: ImageKey; label: string }) {
       onDragOver={e => { e.preventDefault(); setDragging(true); }}
       onDragLeave={() => setDragging(false)}
       onDrop={handleDrop}
-      style={{ display: 'flex', gap: 14, alignItems: 'flex-start', background: '#001529', border: `1px ${dragging ? 'dashed' : 'solid'} ${dragging ? '#f7ad40' : '#262626'}`, borderRadius: 10, padding: 14, transition: 'border-color .15s' }}>
+      style={{ display: 'flex', gap: 14, alignItems: 'flex-start', background: '#050505', border: `1px ${dragging ? 'dashed' : 'solid'} ${dragging ? '#DFFE00' : '#262626'}`, borderRadius: 10, padding: 14, transition: 'border-color .15s' }}>
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, flexShrink: 0, width: 90 }}>
         <div style={{ position: 'relative' }}>
           <ImgPreview src={val} size={80} />
@@ -386,7 +376,7 @@ function HeroImageRow({ imgKey, label }: { imgKey: ImageKey; label: string }) {
       </div>
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
         {dragging ? (
-          <div style={{ textAlign: 'center', padding: '16px 0', fontSize: 13, color: '#f7ad40', fontWeight: 600 }}>
+          <div style={{ textAlign: 'center', padding: '16px 0', fontSize: 13, color: '#DFFE00', fontWeight: 600 }}>
             📂 Solte para substituir a imagem
           </div>
         ) : (
@@ -394,8 +384,8 @@ function HeroImageRow({ imgKey, label }: { imgKey: ImageKey; label: string }) {
           <input
             type="url" value={val?.startsWith('/uploads/') ? val : (val?.startsWith('data:') ? '' : val)} onChange={e => setVal(e.target.value)}
             placeholder={val?.startsWith('/uploads/') ? val : val?.startsWith('data:') ? '⚠ Base64 legado — re-envie' : 'https://... ou arraste aqui'}
-            style={{ flex: 1, background: '#002042', border: '1px solid #333333', borderRadius: 7, color: '#e8edf2', fontSize: 12, padding: '9px 12px', outline: 'none', fontFamily: 'monospace' }}
-            onFocus={e => { e.target.style.borderColor = '#f7ad40'; }}
+            style={{ flex: 1, background: '#111111', border: '1px solid #333333', borderRadius: 7, color: '#e8edf2', fontSize: 12, padding: '9px 12px', outline: 'none', fontFamily: 'monospace' }}
+            onFocus={e => { e.target.style.borderColor = '#DFFE00'; }}
             onBlur={e => { e.target.style.borderColor = '#333333'; }}
           />
           <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }}
@@ -406,7 +396,7 @@ function HeroImageRow({ imgKey, label }: { imgKey: ImageKey; label: string }) {
             title="Fazer upload de arquivo"
             style={{
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5, padding: '9px 12px',
-              background: '#002042', color: uploading ? '#f7ad40' : '#f7ad40',
+              background: '#111111', color: uploading ? '#DFFE00' : '#DFFE00',
               border: '1px solid #333333', borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: uploading ? 'wait' : 'pointer', whiteSpace: 'nowrap',
             }}
           >
@@ -414,7 +404,7 @@ function HeroImageRow({ imgKey, label }: { imgKey: ImageKey; label: string }) {
           </button>
           <button onClick={save} style={{
             display: 'flex', alignItems: 'center', gap: 5, padding: '9px 14px',
-            background: saved ? '#0d3320' : '#1f1f1f', color: saved ? '#4ade80' : '#f7ad40',
+            background: saved ? '#0d3320' : '#1f1f1f', color: saved ? '#4ade80' : '#DFFE00',
             border: `1px solid ${saved ? '#1a4030' : '#333333'}`, borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap',
           }}>
             <Save size={13} /> {saved ? 'Salvo!' : 'Salvar'}
@@ -481,21 +471,21 @@ function TrendingTab() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
       <div style={{ marginBottom: 4 }}>
         <p style={{ fontSize: 13, color: '#737373', margin: 0 }}>
-          Pacotes marcados como 🔥 <strong style={{ color: '#f7ad40' }}>Em Alta</strong>. Estes aparecem no carrossel principal do site. Máximo de {MAX_TRENDING}.
+          Pacotes marcados como 🔥 <strong style={{ color: '#DFFE00' }}>Em Alta</strong>. Estes aparecem no carrossel principal do site. Máximo de {MAX_TRENDING}.
         </p>
       </div>
       {trending.length === 0 && <EmptyState text="Nenhum pacote marcado como Em Alta. Vá em Pacotes e ative o toggle 🔥." />}
       {trending.map(pkg => {
         const realIdx = packages.findIndex(p => p === pkg);
         return (
-          <div key={realIdx} style={{ background: '#002042', border: '1px solid #f7ad40', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px' }}>
+          <div key={realIdx} style={{ background: '#111111', border: '1px solid #DFFE00', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px' }}>
             <ImgPreview src={pkg.img} size={52} />
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
                 <span style={{ fontSize: 14, fontWeight: 700, color: '#e8edf2' }}>{pkg.title || 'Sem título'}</span>
-                <span style={{ fontSize: 10, background: '#333333', color: '#f7ad40', padding: '2px 8px', borderRadius: 12, fontWeight: 700 }}>{pkg.tag}</span>
+                <span style={{ fontSize: 10, background: '#333333', color: '#DFFE00', padding: '2px 8px', borderRadius: 12, fontWeight: 700 }}>{pkg.tag}</span>
                 {pkg.category
-                  ? <span style={{ fontSize: 10, background: '#262626', color: '#f7ad40', padding: '2px 8px', borderRadius: 12 }}>{pkg.category}</span>
+                  ? <span style={{ fontSize: 10, background: '#262626', color: '#DFFE00', padding: '2px 8px', borderRadius: 12 }}>{pkg.category}</span>
                   : <span style={{ fontSize: 10, background: '#2a1a00', color: '#fbbf24', padding: '2px 8px', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 4 }}>⚠ Sem categoria</span>
                 }
               </div>
@@ -505,16 +495,16 @@ function TrendingTab() {
               type="button"
               title="Remover de Pacotes em Alta"
               onClick={() => updatePackage(realIdx, { isTrending: false })}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 12px', background: '#333333', color: '#f7ad40', border: '1px solid #333333', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
+              style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 12px', background: '#333333', color: '#DFFE00', border: '1px solid #333333', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}
             >
               <Flame size={13} /> Remover
             </button>
           </div>
         );
       })}
-      <div style={{ marginTop: 8, padding: '10px 14px', background: '#002042', border: '1px solid #333333', borderRadius: 8, fontSize: 12, color: '#737373' }}>
+      <div style={{ marginTop: 8, padding: '10px 14px', background: '#111111', border: '1px solid #333333', borderRadius: 8, fontSize: 12, color: '#737373' }}>
         {trending.length}/{MAX_TRENDING} slots usados
-        <span style={{ display: 'inline-block', width: `${(trending.length / MAX_TRENDING) * 100}%`, height: 4, background: trending.length >= MAX_TRENDING ? '#f87171' : '#f7ad40', borderRadius: 2, marginLeft: 8, verticalAlign: 'middle', maxWidth: 120 }} />
+        <span style={{ display: 'inline-block', width: `${(trending.length / MAX_TRENDING) * 100}%`, height: 4, background: trending.length >= MAX_TRENDING ? '#f87171' : '#DFFE00', borderRadius: 2, marginLeft: 8, verticalAlign: 'middle', maxWidth: 120 }} />
       </div>
     </div>
   );
@@ -564,8 +554,8 @@ function CurrencySelect({ value, onChange }: { value: string; onChange: (v: stri
       <select
         value={value || 'BRL'}
         onChange={e => onChange(e.target.value)}
-        style={{ background: '#001529', border: '1px solid #333333', borderRadius: 7, color: '#e8edf2', fontSize: 13, padding: '9px 12px', outline: 'none' }}
-        onFocus={e => { e.target.style.borderColor = '#f7ad40'; }}
+        style={{ background: '#050505', border: '1px solid #333333', borderRadius: 7, color: '#e8edf2', fontSize: 13, padding: '9px 12px', outline: 'none' }}
+        onFocus={e => { e.target.style.borderColor = '#DFFE00'; }}
         onBlur={e => { e.target.style.borderColor = '#333333'; }}
       >
         {CURRENCIES.map(c => (
@@ -622,7 +612,7 @@ function PriceMaskInput({
       </label>
       <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
         <span style={{
-          position: 'absolute', left: 10, fontSize: 12, color: '#f7ad40',
+          position: 'absolute', left: 10, fontSize: 12, color: '#DFFE00',
           fontWeight: 700, pointerEvents: 'none', userSelect: 'none',
         }}>{symbol}</span>
         <input
@@ -632,11 +622,11 @@ function PriceMaskInput({
           onChange={handleChange}
           placeholder={new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(0)}
           style={{
-            background: '#001529', border: '1px solid #333333', borderRadius: 7,
+            background: '#050505', border: '1px solid #333333', borderRadius: 7,
             color: '#e8edf2', fontSize: 13, padding: `9px 12px 9px ${symbol.length > 2 ? 40 : 32}px`,
             outline: 'none', width: '100%', boxSizing: 'border-box',
           }}
-          onFocus={e => { e.target.style.borderColor = '#f7ad40'; }}
+          onFocus={e => { e.target.style.borderColor = '#DFFE00'; }}
           onBlur={e => { e.target.style.borderColor = '#333333'; }}
         />
       </div>
@@ -676,7 +666,7 @@ function DateRangeField({ value, onChange }: { value: string; onChange: (v: stri
   };
 
   const inputStyle: React.CSSProperties = {
-    background: '#001529', border: '1px solid #333333', borderRadius: 7,
+    background: '#050505', border: '1px solid #333333', borderRadius: 7,
     color: '#e8edf2', fontSize: 13, padding: '8px 10px', outline: 'none',
     width: '100%', boxSizing: 'border-box'
   };
@@ -711,12 +701,14 @@ function DateRangeField({ value, onChange }: { value: string; onChange: (v: stri
 
 const MAX_TRENDING = 8;
 
-function PackageCard({ pkg, index, total, trendingCount, categories, onUpdate, onRemove, onReorder, onSetTrending, onSaved, isOpen, onToggle, dragHandleProps }: {
+function PackageCard({ pkg, index, total, trendingCount, categories, otherSlugs = [], onUpdate, onRemove, onReorder, onSetTrending, onDuplicate, onSaved, isOpen, onToggle, dragHandleProps }: {
   pkg: TrendingPackage; index: number; total: number; trendingCount: number; categories: string[];
+  otherSlugs?: string[];
   onUpdate: (d: Partial<TrendingPackage>) => void;
   onRemove: () => void;
   onReorder: (dir: 'up' | 'down') => void;
   onSetTrending: (v: boolean) => void;
+  onDuplicate?: () => void;
   onSaved?: () => void;
   isOpen: boolean;
   onToggle: () => void;
@@ -747,13 +739,13 @@ function PackageCard({ pkg, index, total, trendingCount, categories, onUpdate, o
     setTimeout(() => setTrendMsg(null), 3500);
   };
   return (
-    <div style={{ background: '#002042', border: '1px solid #333333', borderRadius: 12, overflow: 'hidden' }}>
+    <div style={{ background: '#111111', border: '1px solid #333333', borderRadius: 12, overflow: 'hidden' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', cursor: 'pointer' }} onClick={handleToggle}>
         <ImgPreview src={pkg.img} size={52} />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 14, fontWeight: 700, color: '#e8edf2' }}>{pkg.title || 'Sem título'}</span>
-            <span style={{ fontSize: 10, background: '#333333', color: '#f7ad40', padding: '2px 8px', borderRadius: 12, fontWeight: 700 }}>{pkg.tag}</span>
+            <span style={{ fontSize: 10, background: '#333333', color: '#DFFE00', padding: '2px 8px', borderRadius: 12, fontWeight: 700 }}>{pkg.tag}</span>
           </div>
           <div style={{ fontSize: 12, color: '#737373', marginTop: 2 }}>{pkg.date} · {pkg.loc} · {pkg.currency || 'BRL'} {pkg.price}</div>
         </div>
@@ -765,6 +757,9 @@ function PackageCard({ pkg, index, total, trendingCount, categories, onUpdate, o
             )}
             <button onClick={e => { e.stopPropagation(); onReorder('up'); }} disabled={index === 0} style={iconBtn(index === 0)} title="Mover para cima"><ChevronUp size={14} /></button>
             <button onClick={e => { e.stopPropagation(); onReorder('down'); }} disabled={index === total - 1} style={iconBtn(index === total - 1)} title="Mover para baixo"><ChevronDown size={14} /></button>
+            {onDuplicate && (
+              <button onClick={e => { e.stopPropagation(); onDuplicate(); }} style={iconBtn(false)} title="Duplicar pacote (copia toda a landing page)"><Copy size={14} /></button>
+            )}
             <button onClick={async e => { e.stopPropagation(); if (await showConfirm('Remover este pacote?', { type: 'danger', confirmText: 'Remover', title: 'Remover Pacote' })) onRemove(); }} style={iconBtn(false, true)} title="Remover"><Trash2 size={14} /></button>
           </div>
         <span style={{ color: '#737373', fontSize: 12 }}>{isOpen ? '▴' : '▾'}</span>
@@ -778,7 +773,7 @@ function PackageCard({ pkg, index, total, trendingCount, categories, onUpdate, o
                 background: trendMsg.startsWith('🔥') ? '#0d3320' : '#1a2030',
                 border: `1px solid ${trendMsg.startsWith('🔥') ? '#1a5c38' : '#333333'}`,
                 borderRadius: 8, padding: '10px 14px', fontSize: 12,
-                color: trendMsg.startsWith('🔥') ? '#4ade80' : '#f7ad40',
+                color: trendMsg.startsWith('🔥') ? '#4ade80' : '#DFFE00',
                 display: 'flex', alignItems: 'center', gap: 8, fontWeight: 600,
                 animation: 'fadeIn .3s ease',
               }}>
@@ -806,9 +801,6 @@ function PackageCard({ pkg, index, total, trendingCount, categories, onUpdate, o
             {/* Audit trail */}
             <AuditTrail pkg={pkg} />
 
-            {/* Audit trail */}
-            <AuditTrail pkg={pkg} />
-
             <AdminSection title="Informações Básicas" icon={Tag}>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: 12 }}>
                 <Field label="Título do Pacote" icon={<Tag size={11} />} value={pkg.title} onChange={v => onUpdate({ title: v })} />
@@ -822,7 +814,7 @@ function PackageCard({ pkg, index, total, trendingCount, categories, onUpdate, o
                   <select
                     value={pkg.tag}
                     onChange={e => onUpdate({ tag: e.target.value })}
-                    style={{ background: '#001529', border: '1px solid #333333', borderRadius: 7, color: '#e8edf2', fontSize: 13, padding: '9px 12px', outline: 'none' }}
+                    style={{ background: '#050505', border: '1px solid #333333', borderRadius: 7, color: '#e8edf2', fontSize: 13, padding: '9px 12px', outline: 'none' }}
                   >
                     {TAG_OPTIONS.map(t => <option key={t} value={t}>{t}</option>)}
                     {!TAG_OPTIONS.includes(pkg.tag) && <option value={pkg.tag}>{pkg.tag}</option>}
@@ -834,7 +826,7 @@ function PackageCard({ pkg, index, total, trendingCount, categories, onUpdate, o
                   <select
                     value={pkg.category || ''}
                     onChange={e => onUpdate({ category: e.target.value })}
-                    style={{ background: '#001529', border: '1px solid #333333', borderRadius: 7, color: '#e8edf2', fontSize: 13, padding: '9px 12px', outline: 'none', cursor: 'pointer' }}
+                    style={{ background: '#050505', border: '1px solid #333333', borderRadius: 7, color: '#e8edf2', fontSize: 13, padding: '9px 12px', outline: 'none', cursor: 'pointer' }}
                   >
                     <option value="">Selecione uma categoria</option>
                     {categories.map(c => (
@@ -843,13 +835,34 @@ function PackageCard({ pkg, index, total, trendingCount, categories, onUpdate, o
                   </select>
                 </div>
 
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, gridColumn: '1 / -1' }}>
+                  <label style={{ fontSize: 11, color: '#737373', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span><LinkIcon size={11} style={{ verticalAlign: 'middle', marginRight: 4 }} />URL da LP (slug — link permanente para campanhas)</span>
+                    <button type="button" onClick={() => onUpdate({ slug: uniqueSlug(slugify(pkg.title), otherSlugs) })}
+                      style={{ background: '#1a1a1a', border: '1px solid #333', color: '#aaa', padding: '2px 10px', borderRadius: 6, cursor: 'pointer', fontSize: 10, fontWeight: 700 }}>
+                      Gerar do título
+                    </button>
+                  </label>
+                  <input
+                    value={pkg.slug ?? ''}
+                    onChange={e => onUpdate({ slug: sanitizeSlugInput(e.target.value) })}
+                    placeholder="ex: gp-de-monaco-2026 (gerado automaticamente ao editar o título)"
+                    style={{ background: '#050505', border: '1px solid #333333', borderRadius: 7, color: '#e8edf2', fontSize: 13, padding: '9px 12px', outline: 'none' }}
+                  />
+                  {pkg.slug && otherSlugs.includes(pkg.slug.toLowerCase()) ? (
+                    <span style={{ fontSize: 10, color: '#f87171' }}>⚠️ Este slug já é usado por outro pacote — escolha outro para não conflitar.</span>
+                  ) : (
+                    <span style={{ fontSize: 10, color: '#4ade80' }}>Link da LP: /pacote/{pkg.slug || index} {pkg.slug ? '(permanente — seguro para campanhas e UTMs)' : '(numérico — muda se a ordem dos pacotes mudar)'}</span>
+                  )}
+                </div>
+
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8, paddingBottom: 2 }}>
-                  <label style={{ fontSize: 11, color: pkg.isTrending ? '#f7ad40' : '#737373', fontWeight: pkg.isTrending ? 700 : 600, textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 4 }}><Flame size={11} /> Em Alta</label>
+                  <label style={{ fontSize: 11, color: pkg.isTrending ? '#DFFE00' : '#737373', fontWeight: pkg.isTrending ? 700 : 600, textTransform: 'uppercase', letterSpacing: '0.05em', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 4 }}><Flame size={11} /> Em Alta</label>
                   <button
                     type="button"
                     style={{
                       width: 44, height: 24, borderRadius: 12, border: 'none', cursor: pkg.isTrending || trendingCount < MAX_TRENDING ? 'pointer' : 'not-allowed', position: 'relative', transition: 'background .2s',
-                      background: pkg.isTrending ? '#f7ad40' : '#333333', opacity: !pkg.isTrending && trendingCount >= MAX_TRENDING ? 0.5 : 1,
+                      background: pkg.isTrending ? '#DFFE00' : '#333333', opacity: !pkg.isTrending && trendingCount >= MAX_TRENDING ? 0.5 : 1,
                     }}
                     onClick={handleTrendToggle}
                   >
@@ -901,165 +914,8 @@ function PackageCard({ pkg, index, total, trendingCount, categories, onUpdate, o
               </div>
             </AdminSection>
 
-            <AdminSection title="Hospedagem Detalhada (Landing Page)" icon={BedDouble} color="#10b981">
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
-                <button onClick={() => {
-                  let pacotesObj = { opcoes_hospedagem: [], datas: { partida: '', retorno: '', duracao: '' }, inclusos: [] };
-                  try { 
-                    const parsed = JSON.parse(pkg.pacotesOptionsData || '{}');
-                    pacotesObj = Array.isArray(parsed) ? { ...pacotesObj, opcoes_hospedagem: parsed } : { ...pacotesObj, ...parsed };
-                  } catch {}
-                  pacotesObj.opcoes_hospedagem.push({ nome: '', descricao_card: '', valor_individual: '', valor_duplo: '', moeda: 'USD', parcelas: '10', inclusos: [] });
-                  onUpdate({ pacotesOptionsData: JSON.stringify(pacotesObj) });
-                }} style={{ background: '#002b52', border: '1px solid #333', color: '#fff', padding: '6px 12px', borderRadius: 8, cursor: 'pointer', fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <Plus size={12} /> Novo Card de Hospedagem
-                </button>
-              </div>
-
-              {(() => {
-                let pacotesObj = { opcoes_hospedagem: [], datas: { partida: '', retorno: '', duracao: '' }, inclusos: [] };
-                try { 
-                  const parsed = JSON.parse(pkg.pacotesOptionsData || '{}');
-                  pacotesObj = Array.isArray(parsed) ? { ...pacotesObj, opcoes_hospedagem: parsed } : { ...pacotesObj, ...parsed };
-                } catch {}
-
-                const updatePacotes = (newObj: any) => onUpdate({ pacotesOptionsData: JSON.stringify(newObj) });
-
-                return (
-                  <div style={{ display: 'grid', gap: 16 }}>
-                    {pacotesObj.opcoes_hospedagem.map((op: any, i: number) => (
-                      <div key={`op-${i}`} style={{ background: '#001a33', padding: 16, borderRadius: 10, border: '1px solid #002b52' }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                          <input placeholder="Nome da Hospedagem..." value={op.nome || ''} onChange={e => { const n={...pacotesObj}; n.opcoes_hospedagem[i].nome=e.target.value; updatePacotes(n); }} style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: 13, fontWeight: 700, outline: 'none', width: '80%' }} />
-                          <button onClick={() => { const n={...pacotesObj}; n.opcoes_hospedagem.splice(i, 1); updatePacotes(n); }} style={{ background: 'transparent', border: 'none', color: '#f87171', cursor: 'pointer' }}><X size={14} /></button>
-                        </div>
-                        
-                        <div style={{ display: 'grid', gap: 12 }}>
-                          <Textarea label="Breve Descrição do Card" value={op.descricao_card || ''} onChange={v => { const n={...pacotesObj}; n.opcoes_hospedagem[i].descricao_card=v; updatePacotes(n); }} rows={2} />
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
-                            <Field label="V. Individual" value={op.valor_individual || ''} onChange={v => { const n={...pacotesObj}; n.opcoes_hospedagem[i].valor_individual=v; updatePacotes(n); }} />
-                            <Field label="V. Duplo" value={op.valor_duplo || ''} onChange={v => { const n={...pacotesObj}; n.opcoes_hospedagem[i].valor_duplo=v; updatePacotes(n); }} />
-                            <Field label="Moeda" value={op.moeda || 'USD'} onChange={v => { const n={...pacotesObj}; n.opcoes_hospedagem[i].moeda=v; updatePacotes(n); }} />
-                          </div>
-
-                          <AdminSubSection title="Inclusos Específicos">
-                            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
-                              <button onClick={() => {
-                                const n = { ...pacotesObj };
-                                if(!n.opcoes_hospedagem[i].inclusos) n.opcoes_hospedagem[i].inclusos = [];
-                                n.opcoes_hospedagem[i].inclusos.push({ titulo: '', descricao: '' });
-                                updatePacotes(n);
-                              }} style={{ background: 'transparent', border: '1px solid #333', color: '#aaa', padding: '2px 6px', borderRadius: 4, cursor: 'pointer', fontSize: 9 }}>+ Item</button>
-                            </div>
-                            {(op.inclusos || []).map((inc: any, j: number) => (
-                              <div key={`inc-local-${j}`} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: 6, marginBottom: 6 }}>
-                                <input placeholder="Título..." value={inc.titulo || ''} onChange={e => { const n={...pacotesObj}; n.opcoes_hospedagem[i].inclusos[j].titulo=e.target.value; updatePacotes(n); }} style={{ background: '#001529', border: '1px solid #003866', borderRadius: 4, color: '#eee', fontSize: 11, padding: '4px 8px' }} />
-                                <input placeholder="Desc..." value={inc.descricao || ''} onChange={e => { const n={...pacotesObj}; n.opcoes_hospedagem[i].inclusos[j].descricao=e.target.value; updatePacotes(n); }} style={{ background: '#001529', border: '1px solid #003866', borderRadius: 4, color: '#eee', fontSize: 11, padding: '4px 8px' }} />
-                                <button onClick={() => { const n={...pacotesObj}; n.opcoes_hospedagem[i].inclusos.splice(j, 1); updatePacotes(n); }} style={{ background: 'transparent', border: 'none', color: '#555', cursor: 'pointer' }}><X size={12} /></button>
-                              </div>
-                            ))}
-                          </AdminSubSection>
-                        </div>
-                      </div>
-                    ))}
-
-                    <AdminSubSection title="Datas & Inclusos Globais (Fallback)">
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 12 }}>
-                        <Field label="Partida" value={pacotesObj.datas?.partida || ''} onChange={v => { const n={...pacotesObj}; if(!n.datas) n.datas={} as any; n.datas.partida=v; updatePacotes(n); }} />
-                        <Field label="Retorno" value={pacotesObj.datas?.retorno || ''} onChange={v => { const n={...pacotesObj}; if(!n.datas) n.datas={} as any; n.datas.retorno=v; updatePacotes(n); }} />
-                        <Field label="Resumo" value={pacotesObj.datas?.duracao || ''} onChange={v => { const n={...pacotesObj}; if(!n.datas) n.datas={} as any; n.datas.duracao=v; updatePacotes(n); }} />
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                        <span style={{ fontSize: 10, color: '#555', fontWeight: 800 }}>INCLUSOS PADRÃO</span>
-                        <button onClick={() => {
-                          const n = { ...pacotesObj }; if(!n.inclusos) n.inclusos=[]; n.inclusos.push({ titulo: '', descricao: '' });
-                          updatePacotes(n);
-                        }} style={{ background: '#002042', border: '1px solid #333', color: '#fff', padding: '2px 8px', borderRadius: 4, cursor: 'pointer', fontSize: 9 }}>+ Adicionar Item Global</button>
-                      </div>
-                      {(pacotesObj.inclusos || []).map((inc: any, i: number) => (
-                        <div key={`inc-global-${i}`} style={{ display: 'grid', gridTemplateColumns: '1fr 2fr auto', gap: 8, marginBottom: 6 }}>
-                          <input placeholder="Título..." value={inc.titulo || ''} onChange={e => { const n={...pacotesObj}; n.inclusos[i].titulo=e.target.value; updatePacotes(n); }} style={{ background: '#001529', border: '1px solid #003866', borderRadius: 4, color: '#eee', fontSize: 11, padding: '4px 8px' }} />
-                          <input placeholder="Descrição..." value={inc.descricao || ''} onChange={e => { const n={...pacotesObj}; n.inclusos[i].descricao=e.target.value; updatePacotes(n); }} style={{ background: '#001529', border: '1px solid #003866', borderRadius: 4, color: '#eee', fontSize: 11, padding: '4px 8px' }} />
-                          <button onClick={() => { const n={...pacotesObj}; n.inclusos.splice(i, 1); updatePacotes(n); }} style={{ background: 'transparent', border: 'none', color: '#f87171', cursor: 'pointer' }}><X size={14} /></button>
-                        </div>
-                      ))}
-                    </AdminSubSection>
-                  </div>
-                );
-              })()}
-            </AdminSection>
-
-            <AdminSection title="Programação do Evento" icon={CalendarDays} color="#8b5cf6">
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
-                <button onClick={() => {
-                  const p = (() => { try { return JSON.parse(pkg.programacaoData || '[]'); } catch { return []; } })();
-                  p.push({ titulo_aba: '', titulo_dia: '', atividades: [] });
-                  onUpdate({ programacaoData: JSON.stringify(p) });
-                }} style={{ background: '#002b52', border: '1px solid #333', color: '#fff', padding: '6px 12px', borderRadius: 8, cursor: 'pointer', fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <Plus size={12} /> Adicionar Dia
-                </button>
-              </div>
-              {(() => {
-                const prog = (() => { try { return JSON.parse(pkg.programacaoData || '[]'); } catch { return []; } })();
-                return (
-                  <div style={{ display: 'grid', gap: 12 }}>
-                    {prog.map((day: any, i: number) => (
-                      <div key={`prog-comm-${i}`} style={{ background: '#001a33', padding: 16, borderRadius: 10, border: '1px solid #002b52' }}>
-                        <div style={{ display: 'grid', gridTemplateColumns: '100px 1fr auto', gap: 8, marginBottom: 12 }}>
-                          <Field label="Aba" value={day.titulo_aba || ''} onChange={v => { const n=[...prog]; n[i].titulo_aba=v; onUpdate({ programacaoData: JSON.stringify(n) }); }} />
-                          <Field label="Título do Dia" value={day.titulo_dia || ''} onChange={v => { const n=[...prog]; n[i].titulo_dia=v; onUpdate({ programacaoData: JSON.stringify(n) }); }} />
-                          <button onClick={() => { const n=[...prog]; n.splice(i, 1); onUpdate({ programacaoData: JSON.stringify(n) }); }} style={{ background: 'transparent', border: 'none', color: '#f87171', cursor: 'pointer', marginTop: 20 }}><Trash2 size={14} /></button>
-                        </div>
-                        <AdminSubSection title="Atividades">
-                          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
-                            <button onClick={() => {
-                              const n = [...prog]; if(!n[i].atividades) n[i].atividades = [];
-                              n[i].atividades.push({ horario: '', descricao: '' });
-                              onUpdate({ programacaoData: JSON.stringify(n) });
-                            }} style={{ background: 'transparent', border: '1px solid #333', color: '#aaa', padding: '2px 6px', borderRadius: 4, cursor: 'pointer', fontSize: 9 }}>+ Atividade</button>
-                          </div>
-                          {(day.atividades || []).map((ativ: any, j: number) => (
-                            <div key={`ativ-comm-${j}`} style={{ display: 'grid', gridTemplateColumns: '80px 1fr auto', gap: 6, marginBottom: 6 }}>
-                              <input placeholder="08:00" value={ativ.horario || ''} onChange={e => { const n=[...prog]; n[i].atividades[j].horario=e.target.value; onUpdate({ programacaoData: JSON.stringify(n) }); }} style={{ background: '#001529', border: '1px solid #003866', borderRadius: 4, color: '#eee', fontSize: 11, padding: '4px 8px' }} />
-                              <input placeholder="Descrição..." value={ativ.descricao || ''} onChange={e => { const n=[...prog]; n[i].atividades[j].descricao=e.target.value; onUpdate({ programacaoData: JSON.stringify(n) }); }} style={{ background: '#001529', border: '1px solid #003866', borderRadius: 4, color: '#eee', fontSize: 11, padding: '4px 8px' }} />
-                              <button onClick={() => { const n=[...prog]; n[i].atividades.splice(j, 1); onUpdate({ programacaoData: JSON.stringify(n) }); }} style={{ background: 'transparent', border: 'none', color: '#555', cursor: 'pointer' }}><X size={12} /></button>
-                            </div>
-                          ))}
-                        </AdminSubSection>
-                      </div>
-                    ))}
-                  </div>
-                );
-              })()}
-            </AdminSection>
-
-            <AdminSection title="Experiência & Benefícios (Cards)" icon={Star} color="#ec4899">
-              <div style={{ display: 'grid', gap: 16 }}>
-                <Textarea label="Texto da Seção Experiência" value={pkg.experienciaSection ?? ''} onChange={v => onUpdate({ experienciaSection: v })} rows={3} />
-                
-                <AdminSubSection title="Cards de Destaque">
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 12 }}>
-                    <button onClick={() => {
-                      const c = (() => { try { return JSON.parse(pkg.cardsData || '[]'); } catch { return []; } })();
-                      c.push({ titulo: '', descricao: '', icone: 'Zap' });
-                      onUpdate({ cardsData: JSON.stringify(c) });
-                    }} style={{ background: '#003866', border: '1px solid #333', color: '#fff', padding: '4px 8px', borderRadius: 4, cursor: 'pointer', fontSize: 11 }}>+ Adicionar Card</button>
-                  </div>
-                  {(() => {
-                    const cards = (() => { try { return JSON.parse(pkg.cardsData || '[]'); } catch { return []; } })();
-                    return cards.map((c: any, i: number) => (
-                      <div key={`card-comm-${i}`} style={{ background: '#001a33', padding: 12, borderRadius: 8, border: '1px solid #002b52', marginBottom: 8 }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                          <input placeholder="Título do Card..." value={c.titulo || ''} onChange={e => { const n=[...cards]; n[i].titulo=e.target.value; onUpdate({ cardsData: JSON.stringify(n) }); }} style={{ background: 'transparent', border: 'none', color: '#fff', fontSize: 12, fontWeight: 700, outline: 'none' }} />
-                          <button onClick={() => { const n=[...cards]; n.splice(i, 1); onUpdate({ cardsData: JSON.stringify(n) }); }} style={{ background: 'transparent', border: 'none', color: '#f87171', cursor: 'pointer' }}><X size={12} /></button>
-                        </div>
-                        <Textarea label="Descrição do Card" value={c.descricao || ''} onChange={v => { const n=[...cards]; n[i].descricao=v; onUpdate({ cardsData: JSON.stringify(n) }); }} rows={2} />
-                      </div>
-                    ));
-                  })()}
-                </AdminSubSection>
-              </div>
-            </AdminSection>
+            {/* ── Conteúdo da Landing Page — editor compartilhado (Admin/Master/Marketing) ── */}
+            <LPContentEditor pkg={pkg} onUpdate={handleUpdate} tokenKey="emais_admin_token" />
 
             <div style={{ marginTop: 24, padding: 16, background: '#3a0d0d1a', borderRadius: 12, border: '1px solid #3a0d0d', display: 'flex', alignItems: 'center', gap: 12 }}>
               <AlertTriangle size={20} color="#f87171" />
@@ -1091,7 +947,7 @@ function SortablePackageCard(props: any) {
 }
 
 function PackagesTab() {
-  const { packages, categories, updatePackage, addPackage, removePackage, reorderPackage, setPackageTrending } = useContentConfig();
+  const { packages, categories, updatePackage, addPackage, duplicatePackage, removePackage, reorderPackage, setPackageTrending } = useContentConfig();
   const { toast } = useToast();
   const [openRealIdx, setOpenRealIdx] = useState<number | null>(null);
   const activePackages = packages
@@ -1120,8 +976,8 @@ function PackagesTab() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
         <p style={{ fontSize: 13, color: '#737373', margin: 0 }}>
           Gerencie todos os pacotes. Use o toggle{' '}
-          <span style={{ display: 'inline-flex', alignItems: 'center', verticalAlign: 'middle', color: '#f7ad40', gap: 3 }}>
-            <Flame size={13} /> <strong style={{ color: '#f7ad40' }}>Em Alta</strong>
+          <span style={{ display: 'inline-flex', alignItems: 'center', verticalAlign: 'middle', color: '#DFFE00', gap: 3 }}>
+            <Flame size={13} /> <strong style={{ color: '#DFFE00' }}>Em Alta</strong>
           </span>{' '}
           para escolher quais aparecem no carrossel principal do site.
         </p>
@@ -1143,10 +999,12 @@ function PackagesTab() {
               total={packages.length}
               trendingCount={trendingCount}
               categories={categories}
+              otherSlugs={packages.filter((_, j) => j !== realIdx).map(p => (p.slug || '').toLowerCase()).filter(Boolean)}
               isOpen={openRealIdx === realIdx}
               onToggle={() => setOpenRealIdx(prev => prev === realIdx ? null : realIdx)}
               onUpdate={(d: any) => updatePackage(realIdx, d)}
               onSetTrending={(v: any) => setPackageTrending(realIdx, v)}
+              onDuplicate={() => { duplicatePackage(realIdx); toast('Pacote duplicado! A cópia está logo abaixo — edite os campos e envie para aprovação. 📋', 'success'); }}
               onRemove={() => { removePackage(realIdx); toast('Pacote movido para a lixeira.', 'warning'); }}
               onReorder={(dir: string) => reorderPackage(realIdx, dir === 'up' ? realIdx - 1 : realIdx + 1)}
               onSaved={() => toast('Pacote atualizado!', 'success')}
@@ -1203,7 +1061,7 @@ function EmojiPicker({ currentEmoji, onChange }: {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           width: 36, height: 36, borderRadius: 8, fontSize: 20,
           background: open ? '#333333' : '#1f1f1f',
-          border: `1px solid ${open ? '#f7ad40' : '#333333'}`,
+          border: `1px solid ${open ? '#DFFE00' : '#333333'}`,
           cursor: 'pointer', flexShrink: 0, transition: 'all .15s',
         }}
       >
@@ -1213,7 +1071,7 @@ function EmojiPicker({ currentEmoji, onChange }: {
       {open && (
         <div style={{
           position: 'absolute', top: 'calc(100% + 6px)', left: 0, zIndex: 100,
-          background: '#001a33', border: '1px solid #333333', borderRadius: 10,
+          background: '#0a0a0a', border: '1px solid #333333', borderRadius: 10,
           padding: 10, width: 270, boxShadow: '0 8px 32px rgba(0,0,0,.6)',
         }}>
           <p style={{ fontSize: 10, color: '#737373', margin: '0 0 8px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Escolha o emoji do esporte</p>
@@ -1227,7 +1085,7 @@ function EmojiPicker({ currentEmoji, onChange }: {
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   width: '100%', aspectRatio: '1', borderRadius: 6, border: 'none',
-                  background: currentEmoji === emoji ? '#f7ad40' : '#1f1f1f',
+                  background: currentEmoji === emoji ? '#DFFE00' : '#1f1f1f',
                   fontSize: 18, cursor: 'pointer', transition: 'background .1s',
                 }}
               >
@@ -1254,7 +1112,7 @@ function SortableCategoryItem({ cat, i, categoryIcons, updateCategoryIcon, reord
     transition,
     zIndex: isDragging ? 10 : 1,
     position: 'relative',
-    display: 'flex', alignItems: 'center', gap: 8, background: '#002042', border: '1px solid #333333', borderRadius: 8, padding: '10px 12px'
+    display: 'flex', alignItems: 'center', gap: 8, background: '#111111', border: '1px solid #333333', borderRadius: 8, padding: '10px 12px'
   };
 
   return (
@@ -1278,7 +1136,7 @@ function SortableCategoryItem({ cat, i, categoryIcons, updateCategoryIcon, reord
           onChange={e => setEditVal(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter') confirmEdit(); if (e.key === 'Escape') setEditIdx(null); }}
           autoFocus
-           style={{ flex: 1, background: '#001529', border: '1px solid #f7ad40', borderRadius: 6, color: '#e8edf2', fontSize: 13, padding: '6px 10px', outline: 'none' }}
+           style={{ flex: 1, background: '#050505', border: '1px solid #DFFE00', borderRadius: 6, color: '#e8edf2', fontSize: 13, padding: '6px 10px', outline: 'none' }}
         />
       ) : (
         <span style={{ flex: 1, fontSize: 13, color: '#e8edf2' }}>{cat}</span>
@@ -1287,7 +1145,7 @@ function SortableCategoryItem({ cat, i, categoryIcons, updateCategoryIcon, reord
       {editIdx === i ? (
         <button onClick={confirmEdit} style={{ background: '#0d3320', border: '1px solid #1a5c38', borderRadius: 6, color: '#4ade80', fontSize: 11, padding: '5px 10px', cursor: 'pointer', fontWeight: 600 }}>✓ Salvar</button>
       ) : (
-        <button onClick={() => startEdit(i)} style={{ background: '#1f1f1f', border: '1px solid #333333', borderRadius: 6, color: '#f7ad40', fontSize: 11, padding: '5px 10px', cursor: 'pointer' }}>Editar</button>
+        <button onClick={() => startEdit(i)} style={{ background: '#1f1f1f', border: '1px solid #333333', borderRadius: 6, color: '#DFFE00', fontSize: 11, padding: '5px 10px', cursor: 'pointer' }}>Editar</button>
       )}
       <button onClick={async () => { if (await showConfirm(`Remover a categoria "${cat}"?`, { type: 'danger', confirmText: 'Remover', title: 'Remover Categoria' })) { removeCategory(i); toast(`Categoria "${cat}" removida.`, 'warning'); } }} style={{ background: '#2a0a0a', border: '1px solid #3a1a1a', borderRadius: 6, color: '#ff6b6b', fontSize: 11, padding: '5px 8px', cursor: 'pointer' }}><Trash2 size={12} /></button>
     </div>
@@ -1347,14 +1205,14 @@ function CategoriesTab() {
           onChange={e => setNewName(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && handleAdd()}
           placeholder="Nome da nova categoria..."
-          style={{ flex: 1, background: '#001529', border: '1px solid #333333', borderRadius: 8, color: '#e8edf2', fontSize: 13, padding: '10px 12px', outline: 'none' }}
-          onFocus={e => { e.target.style.borderColor = '#f7ad40'; }}
+          style={{ flex: 1, background: '#050505', border: '1px solid #333333', borderRadius: 8, color: '#e8edf2', fontSize: 13, padding: '10px 12px', outline: 'none' }}
+          onFocus={e => { e.target.style.borderColor = '#DFFE00'; }}
           onBlur={e => { e.target.style.borderColor = '#333333'; }}
         />
         <button
           onClick={handleAdd}
           disabled={!newName.trim()}
-          style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '10px 18px', background: newName.trim() ? 'linear-gradient(135deg, #f7ad40, #d45f1a)' : '#1f1f1f', color: newName.trim() ? '#002042' : '#737373', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: newName.trim() ? 'pointer' : 'not-allowed' }}
+          style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '10px 18px', background: newName.trim() ? 'linear-gradient(135deg, #DFFE00, #d45f1a)' : '#1f1f1f', color: newName.trim() ? '#000' : '#737373', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: newName.trim() ? 'pointer' : 'not-allowed' }}
         >
           <Plus size={14} /> Adicionar
         </button>
@@ -1419,12 +1277,12 @@ function TrashTab() {
         <AlertTriangle size={13} /> Pacotes na lixeira não aparecem no site. Somente o <strong>Admin Master</strong> pode restaurar ou deletar permanentemente.
       </div>
       {deleted.map(({ p: pkg, realIdx }) => (
-        <div key={realIdx} style={{ background: '#002042', border: '1px solid #3a1a1a', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', opacity: 0.8 }}>
+        <div key={realIdx} style={{ background: '#111111', border: '1px solid #3a1a1a', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', opacity: 0.8 }}>
           <ImgPreview src={pkg.img} size={52} />
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: 14, fontWeight: 700, color: '#e8edf2' }}>{pkg.title || 'Sem título'}</div>
             <div style={{ fontSize: 12, color: '#737373', marginTop: 2 }}>
-              Excluído por <strong style={{ color: '#f7ad40' }}>{pkg.deletedBy ?? 'admin'}</strong>
+              Excluído por <strong style={{ color: '#DFFE00' }}>{pkg.deletedBy ?? 'admin'}</strong>
               {pkg.deletedAt ? ` em ${new Date(pkg.deletedAt).toLocaleDateString('pt-BR')}` : ''}
             </div>
           </div>
@@ -1454,7 +1312,7 @@ function TrashTab() {
 /* ── Util components ────────────────────────────────────────────── */
 function EmptyState({ text }: { text: string }) {
   return (
-    <div style={{ textAlign: 'center', padding: '40px 20px', color: '#737373', fontSize: 14, background: '#002042', borderRadius: 12, border: '1px dashed #333333' }}>
+    <div style={{ textAlign: 'center', padding: '40px 20px', color: '#737373', fontSize: 14, background: '#111111', borderRadius: 12, border: '1px dashed #333333' }}>
       {text}
     </div>
   );
@@ -1464,14 +1322,14 @@ function EmptyState({ text }: { text: string }) {
 const iconBtn = (disabled: boolean, danger = false): React.CSSProperties => ({
   display: 'flex', alignItems: 'center', justifyContent: 'center',
   width: 30, height: 30, borderRadius: 6, border: 'none', cursor: disabled ? 'not-allowed' : 'pointer',
-  background: disabled ? '#001529' : danger ? '#2a0a0a' : '#1f1f1f',
-  color: disabled ? '#2a3a4a' : danger ? '#ff6b6b' : '#f7ad40',
+  background: disabled ? '#050505' : danger ? '#2a0a0a' : '#1f1f1f',
+  color: disabled ? '#2a3a4a' : danger ? '#ff6b6b' : '#DFFE00',
   flexShrink: 0,
 });
 
 const addBtn: React.CSSProperties = {
   display: 'flex', alignItems: 'center', gap: 6, padding: '9px 14px',
-  background: 'linear-gradient(135deg, #f7ad40, #d45f1a)', color: '#002042',
+  background: 'linear-gradient(135deg, #DFFE00, #d45f1a)', color: '#000',
   border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap',
 };
 
@@ -1493,7 +1351,7 @@ function AuditTrail({ pkg }: { pkg: import('../types').TrendingPackage }) {
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 4 }}>
       {rows.map(r => (
-        <span key={r.label} style={{ fontSize: 10, background: '#001529', border: `1px solid ${r.color}22`, borderRadius: 6, padding: '3px 8px', color: r.color, display: 'flex', gap: 4, alignItems: 'center' }}>
+        <span key={r.label} style={{ fontSize: 10, background: '#050505', border: `1px solid ${r.color}22`, borderRadius: 6, padding: '3px 8px', color: r.color, display: 'flex', gap: 4, alignItems: 'center' }}>
           <span style={{ opacity: 0.7 }}>{r.label}:</span>
           <strong>{r.user}</strong>
           {r.at && <span style={{ opacity: 0.5 }}>· {fmtDate(r.at)}</span>}
@@ -1540,20 +1398,20 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
   };
 
   const inputStyle = (hasErr: boolean): React.CSSProperties => ({
-    background: '#001529',
+    background: '#050505',
     border: `1px solid ${hasErr ? '#e55' : '#333333'}`,
     borderRadius: 8, color: '#fff', fontSize: 14, padding: '12px 14px', outline: 'none',
   });
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #001529 0%, #002b52 50%, #001529 100%)', fontFamily: 'Inter, system-ui, sans-serif' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #050505 0%, #1a1a1a 50%, #050505 100%)', fontFamily: 'Inter, system-ui, sans-serif' }}>
       <form onSubmit={handleSubmit} style={{
-        background: '#002042', border: '1px solid #333333', borderRadius: 16,
+        background: '#111111', border: '1px solid #333333', borderRadius: 16,
         padding: '40px 36px', width: 360, display: 'flex', flexDirection: 'column', gap: 16,
         boxShadow: '0 24px 64px rgba(0,0,0,.6)',
         animation: shake ? 'shake .4s ease' : 'none',
       }}>
-        <div style={{ display: 'flex', justifyContent: 'center' }}><Shield size={36} color="#f7ad40" /></div>
+        <div style={{ display: 'flex', justifyContent: 'center' }}><Shield size={36} color="#DFFE00" /></div>
         <h1 style={{ fontSize: 22, fontWeight: 700, color: '#fff', textAlign: 'center', margin: 0 }}>Painel Admin</h1>
         <p style={{ fontSize: 13, color: '#737373', textAlign: 'center', margin: 0 }}>E-Mais · Gerenciador de Conteúdo</p>
         <input
@@ -1567,7 +1425,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
           style={inputStyle(!!error)}
         />
         {error && <p style={{ color: '#ff6b6b', fontSize: 12, margin: 0 }}>{error}</p>}
-        <button type="submit" disabled={loading} style={{ background: 'linear-gradient(135deg, #f7ad40, #d45f1a)', color: '#002042', fontWeight: 700, fontSize: 14, border: 'none', borderRadius: 8, padding: 13, cursor: loading ? 'wait' : 'pointer', opacity: loading ? 0.7 : 1 }}>
+        <button type="submit" disabled={loading} style={{ background: 'linear-gradient(135deg, #DFFE00, #d45f1a)', color: '#000', fontWeight: 700, fontSize: 14, border: 'none', borderRadius: 8, padding: 13, cursor: loading ? 'wait' : 'pointer', opacity: loading ? 0.7 : 1 }}>
           {loading ? 'Verificando…' : 'Entrar'}
         </button>
       </form>
@@ -1645,10 +1503,10 @@ export default function ImageAdmin() {
   ];
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#001529', color: '#e8edf2', fontFamily: 'Inter, system-ui, sans-serif', alignItems: 'flex-start' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: '#050505', color: '#e8edf2', fontFamily: 'Inter, system-ui, sans-serif', alignItems: 'flex-start' }}>
       {/* Sidebar */}
-      <aside style={{ width: 220, minWidth: 220, background: '#002042', borderRight: '1px solid #333333', display: 'flex', flexDirection: 'column', padding: '24px 16px', gap: 8, position: 'sticky', top: 0, height: '100vh', overflowY: 'auto' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 8px 24px', fontSize: 15, fontWeight: 700, color: '#f7ad40', borderBottom: '1px solid #333333', marginBottom: 16 }}>
+      <aside style={{ width: 220, minWidth: 220, background: '#111111', borderRight: '1px solid #333333', display: 'flex', flexDirection: 'column', padding: '24px 16px', gap: 8, position: 'sticky', top: 0, height: '100vh', overflowY: 'auto' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 8px 24px', fontSize: 15, fontWeight: 700, color: '#DFFE00', borderBottom: '1px solid #333333', marginBottom: 16 }}>
           <LayoutDashboard size={20} /> E-Mais Admin
         </div>
         <nav style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -1657,7 +1515,7 @@ export default function ImageAdmin() {
               display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px',
               borderRadius: 8, fontSize: 13, cursor: 'pointer', border: 'none', textAlign: 'left', width: '100%',
               background: tab === t.id ? '#1f1f1f' : 'transparent',
-              color: tab === t.id ? '#f7ad40' : '#7a9db5',
+              color: tab === t.id ? '#DFFE00' : '#7a9db5',
               fontWeight: tab === t.id ? 700 : 400,
             }}>
               {t.icon} {t.label}
@@ -1665,7 +1523,7 @@ export default function ImageAdmin() {
           ))}
         </nav>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8, paddingTop: 16, borderTop: '1px solid #333333' }}>
-          <button onClick={() => navigate('/')} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 12px', borderRadius: 8, fontSize: 13, cursor: 'pointer', border: 'none', background: '#1f1f1f', color: '#f7ad40' }}>
+          <button onClick={() => navigate('/')} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 12px', borderRadius: 8, fontSize: 13, cursor: 'pointer', border: 'none', background: '#1f1f1f', color: '#DFFE00' }}>
             <Eye size={14} /> Ver Site
           </button>
           <button onClick={async () => {
@@ -1688,15 +1546,15 @@ export default function ImageAdmin() {
             <h1 style={{ fontSize: 22, fontWeight: 700, color: '#fff', margin: '0 0 4px', display: 'flex', alignItems: 'center', gap: 8 }}>
               {TABS.find(t => t.id === tab)?.icon} {TABS.find(t => t.id === tab)?.label}
             </h1>
-            <p style={{ fontSize: 13, color: saving ? '#f7ad40' : '#737373', margin: 0, display: 'flex', alignItems: 'center', gap: 5, transition: 'color .3s' }}>
-              {saving ? <><span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: '#f7ad40', animation: 'pulse 1s infinite' }} /> Salvando…</> : 'Edições salvas automaticamente.'}
+            <p style={{ fontSize: 13, color: saving ? '#DFFE00' : '#737373', margin: 0, display: 'flex', alignItems: 'center', gap: 5, transition: 'color .3s' }}>
+              {saving ? <><span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: '#DFFE00', animation: 'pulse 1s infinite' }} /> Salvando…</> : 'Edições salvas automaticamente.'}
             </p>
           </div>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            <button onClick={handleExport} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 14px', background: '#1f1f1f', color: '#f7ad40', border: '1px solid #333333', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+            <button onClick={handleExport} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 14px', background: '#1f1f1f', color: '#DFFE00', border: '1px solid #333333', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
               <Download size={13} /> Exportar JSON
             </button>
-            <button onClick={() => setShowImport(o => !o)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 14px', background: '#1f1f1f', color: '#f7ad40', border: '1px solid #333333', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+            <button onClick={() => setShowImport(o => !o)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 14px', background: '#1f1f1f', color: '#DFFE00', border: '1px solid #333333', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
               <Upload size={13} /> Importar JSON
             </button>
             <button onClick={() => setShowResetConfirm(true)} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 14px', background: '#2a0a0a', color: '#ff6b6b', border: '1px solid #3a1a1a', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
@@ -1707,16 +1565,16 @@ export default function ImageAdmin() {
 
         {/* Import panel */}
         {showImport && (
-          <div style={{ margin: '16px 32px', background: '#002042', border: '1px solid #333333', borderRadius: 12, padding: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{ margin: '16px 32px', background: '#111111', border: '1px solid #333333', borderRadius: 12, padding: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 14, fontWeight: 600, color: '#aac' }}>
               <span>Importar configuração JSON (emais-config.json)</span>
               <button onClick={() => setShowImport(false)} style={{ background: 'none', border: 'none', color: '#737373', cursor: 'pointer' }}><X size={16} /></button>
             </div>
             <textarea value={importText} onChange={e => setImportText(e.target.value)} rows={5}
               placeholder='Cole aqui o conteúdo exportado...'
-              style={{ background: '#001529', border: '1px solid #333333', borderRadius: 8, color: '#e8edf2', fontSize: 12, fontFamily: 'monospace', padding: 12, resize: 'vertical', outline: 'none' }}
+              style={{ background: '#050505', border: '1px solid #333333', borderRadius: 8, color: '#e8edf2', fontSize: 12, fontFamily: 'monospace', padding: 12, resize: 'vertical', outline: 'none' }}
             />
-            <button onClick={handleImport} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 14px', background: 'linear-gradient(135deg, #f7ad40, #d45f1a)', color: '#002042', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', alignSelf: 'flex-start' }}>
+            <button onClick={handleImport} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 14px', background: 'linear-gradient(135deg, #DFFE00, #d45f1a)', color: '#000', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', alignSelf: 'flex-start' }}>
               <Upload size={13} /> Aplicar Configuração
             </button>
           </div>
@@ -1736,11 +1594,11 @@ export default function ImageAdmin() {
       {/* Reset confirm modal */}
       {showResetConfirm && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 999 }}>
-          <div style={{ background: '#002042', border: '1px solid #333333', borderRadius: 14, padding: 32, maxWidth: 420, width: '90%', display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div style={{ background: '#111111', border: '1px solid #333333', borderRadius: 14, padding: 32, maxWidth: 420, width: '90%', display: 'flex', flexDirection: 'column', gap: 16 }}>
             <h2 style={{ fontSize: 18, fontWeight: 700, color: '#fff', margin: 0 }}>Resetar tudo?</h2>
             <p style={{ fontSize: 14, color: '#737373', margin: 0, lineHeight: 1.5 }}>Isso vai restaurar todos os textos, imagens e cards para o conteúdo original. Esta ação não pode ser desfeita.</p>
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-              <button onClick={() => setShowResetConfirm(false)} style={{ padding: '9px 16px', background: '#1f1f1f', color: '#f7ad40', border: '1px solid #333333', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Cancelar</button>
+              <button onClick={() => setShowResetConfirm(false)} style={{ padding: '9px 16px', background: '#1f1f1f', color: '#DFFE00', border: '1px solid #333333', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Cancelar</button>
               <button onClick={handleReset} style={{ padding: '9px 16px', background: '#2a0a0a', color: '#ff6b6b', border: '1px solid #3a1a1a', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>Sim, resetar tudo</button>
             </div>
           </div>

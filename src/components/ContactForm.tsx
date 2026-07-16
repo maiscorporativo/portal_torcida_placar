@@ -27,8 +27,8 @@ function FloatInput({
         onBlur={() => setFocused(false)}
         style={{
           width: '100%', boxSizing: 'border-box',
-          background: '#002042',
-          border: `1.5px solid ${focused ? '#f7ad40' : 'rgba(255,255,255,0.1)'}`,
+          background: '#111111',
+          border: `1.5px solid ${focused ? '#DFFE00' : 'rgba(255,255,255,0.1)'}`,
           borderRadius: 12,
           color: '#fff',
           fontSize: 15,
@@ -47,7 +47,7 @@ function FloatInput({
           top: raised ? 8 : '50%',
           transform: raised ? 'none' : 'translateY(-50%)',
           fontSize: raised ? 10 : 14,
-          color: focused ? '#f7ad40' : 'rgba(255,255,255,0.38)',
+          color: focused ? '#DFFE00' : 'rgba(255,255,255,0.38)',
           fontWeight: raised ? 700 : 400,
           letterSpacing: raised ? '0.08em' : '0.01em',
           textTransform: raised ? 'uppercase' : 'none',
@@ -62,7 +62,7 @@ function FloatInput({
       <span style={{
         position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)',
         height: 2, width: focused ? '92%' : 0,
-        background: 'linear-gradient(90deg, #f7ad40, #C2E000)',
+        background: 'linear-gradient(90deg, #DFFE00, #C2E000)',
         borderRadius: 2, transition: 'width 0.25s ease',
         pointerEvents: 'none',
       }} />
@@ -91,8 +91,8 @@ function PhoneInput({ value, onChange }: { value: string; onChange: (v: string) 
         style={{
           display: 'flex', alignItems: 'center',
           width: '100%', boxSizing: 'border-box',
-          background: '#002042',
-          border: `1.5px solid ${focused ? '#f7ad40' : 'rgba(255,255,255,0.1)'}`,
+          background: '#111111',
+          border: `1.5px solid ${focused ? '#DFFE00' : 'rgba(255,255,255,0.1)'}`,
           borderRadius: 12,
           padding: '22px 18px 8px',
           transition: 'border-color 0.2s, background 0.2s',
@@ -142,7 +142,7 @@ function PhoneInput({ value, onChange }: { value: string; onChange: (v: string) 
           top: raised ? 8 : '50%',
           transform: raised ? 'none' : 'translateY(-50%)',
           fontSize: raised ? 10 : 14,
-          color: focused ? '#f7ad40' : 'rgba(255,255,255,0.38)',
+          color: focused ? '#DFFE00' : 'rgba(255,255,255,0.38)',
           fontWeight: raised ? 700 : 400,
           letterSpacing: raised ? '0.08em' : '0.01em',
           textTransform: raised ? 'uppercase' : 'none',
@@ -156,7 +156,7 @@ function PhoneInput({ value, onChange }: { value: string; onChange: (v: string) 
       <span style={{
         position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)',
         height: 2, width: focused ? '92%' : 0,
-        background: 'linear-gradient(90deg, #f7ad40, #C2E000)',
+        background: 'linear-gradient(90deg, #DFFE00, #C2E000)',
         borderRadius: 2, transition: 'width 0.25s ease',
         pointerEvents: 'none',
       }} />
@@ -221,7 +221,7 @@ function PackageSelect({ id, value, onChange }: { id: string; value: string; onC
           <span style={{
             position: 'absolute', left: 14, top: 8,
             fontSize: 10, fontWeight: 800, letterSpacing: '0.1em',
-            textTransform: 'uppercase', color: '#f7ad40',
+            textTransform: 'uppercase', color: '#DFFE00',
             pointerEvents: 'none',
           }}>
             Pacote de interesse
@@ -250,7 +250,7 @@ function PackageSelect({ id, value, onChange }: { id: string; value: string; onC
           {priceStr && (
             <span style={{
               flexShrink: 0,
-              fontSize: 12, fontWeight: 800, color: '#f7ad40',
+              fontSize: 12, fontWeight: 800, color: '#DFFE00',
               background: 'rgba(223,254,0,0.12)',
               border: '1px solid rgba(223,254,0,0.25)',
               padding: '3px 8px', borderRadius: 7,
@@ -270,7 +270,7 @@ function PackageSelect({ id, value, onChange }: { id: string; value: string; onC
               cursor: 'pointer', color: 'rgba(255,255,255,0.45)',
               display: 'flex', alignItems: 'center', transition: 'all 0.15s',
             }}
-            onMouseEnter={e => { const b = e.currentTarget as HTMLButtonElement; b.style.color = '#f7ad40'; b.style.borderColor = 'rgba(223,254,0,0.4)'; }}
+            onMouseEnter={e => { const b = e.currentTarget as HTMLButtonElement; b.style.color = '#DFFE00'; b.style.borderColor = 'rgba(223,254,0,0.4)'; }}
             onMouseLeave={e => { const b = e.currentTarget as HTMLButtonElement; b.style.color = 'rgba(255,255,255,0.45)'; b.style.borderColor = 'rgba(255,255,255,0.1)'; }}
           >
             <svg width="13" height="13" viewBox="0 0 14 14" fill="none">
@@ -298,8 +298,8 @@ function PackageSelect({ id, value, onChange }: { id: string; value: string; onC
           placeholder={open ? 'Buscar pacote...' : ' '}
           style={{
             width: '100%', boxSizing: 'border-box',
-            background: active ? '#002b52' : '#002042',
-            border: `1.5px solid ${active ? '#f7ad40' : 'rgba(255,255,255,0.1)'}`,
+            background: active ? '#1a1a1a' : '#111111',
+            border: `1.5px solid ${active ? '#DFFE00' : 'rgba(255,255,255,0.1)'}`,
             borderRadius: open ? '12px 12px 0 0' : 12,
             color: '#fff', fontSize: 15,
             padding: '22px 42px 8px 18px',
@@ -315,7 +315,7 @@ function PackageSelect({ id, value, onChange }: { id: string; value: string; onC
             top: raised ? 8 : '50%',
             transform: raised ? 'none' : 'translateY(-50%)',
             fontSize: raised ? 10 : 14,
-            color: active ? '#f7ad40' : 'rgba(255,255,255,0.38)',
+            color: active ? '#DFFE00' : 'rgba(255,255,255,0.38)',
             fontWeight: raised ? 700 : 400,
             letterSpacing: raised ? '0.08em' : '0.01em',
             textTransform: raised ? 'uppercase' : 'none',
@@ -329,7 +329,7 @@ function PackageSelect({ id, value, onChange }: { id: string; value: string; onC
           position: 'absolute', right: 14, top: '50%',
           transform: `translateY(-50%) rotate(${open ? 180 : 0}deg)`,
           transition: 'transform 0.2s ease',
-          pointerEvents: 'none', color: active ? '#f7ad40' : 'rgba(255,255,255,0.3)',
+          pointerEvents: 'none', color: active ? '#DFFE00' : 'rgba(255,255,255,0.3)',
           display: 'flex', alignItems: 'center',
         }}>
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -339,7 +339,7 @@ function PackageSelect({ id, value, onChange }: { id: string; value: string; onC
         <span style={{
           position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%)',
           height: 2, width: active && !open ? '92%' : 0,
-          background: 'linear-gradient(90deg, #f7ad40, #C2E000)',
+          background: 'linear-gradient(90deg, #DFFE00, #C2E000)',
           borderRadius: 2, transition: 'width 0.25s ease', pointerEvents: 'none',
         }} />
       </div>
@@ -347,8 +347,8 @@ function PackageSelect({ id, value, onChange }: { id: string; value: string; onC
       {open && (
         <div style={{
           position: 'absolute', left: 0, right: 0,
-          background: '#001a33',
-          border: '1.5px solid #f7ad40',
+          background: '#0a0a0a',
+          border: '1.5px solid #DFFE00',
           borderTop: '1px solid rgba(223,254,0,0.2)',
           borderRadius: '0 0 14px 14px',
           zIndex: 500, overflowY: 'auto', overflowX: 'hidden',
@@ -386,7 +386,7 @@ function PackageSelect({ id, value, onChange }: { id: string; value: string; onC
                   onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = selected ? 'rgba(223,254,0,0.1)' : 'none'; }}
                 >
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 14, fontWeight: selected ? 700 : 500, color: selected ? '#f7ad40' : '#fff', lineHeight: 1.35, overflowWrap: 'break-word', wordBreak: 'break-word' }}>
+                    <div style={{ fontSize: 14, fontWeight: selected ? 700 : 500, color: selected ? '#DFFE00' : '#fff', lineHeight: 1.35, overflowWrap: 'break-word', wordBreak: 'break-word' }}>
                       {pkg.title}
                     </div>
                     {pkg.loc && (
@@ -399,14 +399,14 @@ function PackageSelect({ id, value, onChange }: { id: string; value: string; onC
                     {priceStr && (
                       <span style={{
                         fontSize: 12, fontWeight: 700,
-                        color: selected ? '#f7ad40' : 'rgba(255,255,255,0.4)',
+                        color: selected ? '#DFFE00' : 'rgba(255,255,255,0.4)',
                         background: selected ? 'rgba(223,254,0,0.12)' : 'rgba(255,255,255,0.05)',
                         padding: '3px 8px', borderRadius: 6,
                       }}>{priceStr}</span>
                     )}
                     {selected && (
                       <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                        <path d="M2.5 7l3.5 3.5 5.5-6" stroke="#f7ad40" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <path d="M2.5 7l3.5 3.5 5.5-6" stroke="#DFFE00" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     )}
                   </div>
@@ -480,7 +480,7 @@ export default function ContactForm() {
     <section
       id="contato-form"
       style={{
-        background: 'linear-gradient(180deg, #002042 0%, #001a33 100%)',
+        background: 'linear-gradient(180deg, #000000 0%, #09090b 100%)',
         padding: '96px 24px',
         position: 'relative',
       }}
@@ -520,7 +520,7 @@ export default function ContactForm() {
             <span style={{
               display: 'inline-block', fontSize: 11, fontWeight: 800,
               letterSpacing: '0.22em', textTransform: 'uppercase',
-              color: '#f7ad40', marginBottom: 20,
+              color: '#DFFE00', marginBottom: 20,
             }}>
               Fale com a gente
             </span>
@@ -533,7 +533,7 @@ export default function ContactForm() {
             }}>
               Planeje sua<br />
               <span style={{
-                background: 'linear-gradient(90deg, #f7ad40, #C2E000)',
+                background: 'linear-gradient(90deg, #DFFE00, #C2E000)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}>
@@ -564,7 +564,7 @@ export default function ContactForm() {
                     flexShrink: 0,
                   }}>
                     <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
-                      <path d="M2 5.5L4.5 8L9 3" stroke="#f7ad40" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                      <path d="M2 5.5L4.5 8L9 3" stroke="#DFFE00" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </span>
                   <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>{text}</span>
@@ -594,7 +594,7 @@ export default function ContactForm() {
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   margin: '0 auto 24px',
                 }}>
-                  <CheckCircle2 size={36} color="#f7ad40" />
+                  <CheckCircle2 size={36} color="#DFFE00" />
                 </div>
                 <h3 style={{ fontSize: 22, fontWeight: 800, color: '#fff', margin: '0 0 10px', letterSpacing: '-0.02em' }}>
                   Formulário enviado com sucesso!
@@ -605,7 +605,7 @@ export default function ContactForm() {
                 <button
                   onClick={() => { setNome(''); setEmail(''); setTelefone(''); setPacote(''); setStatus('idle'); }}
                   style={{
-                    background: 'none', border: 'none', color: '#f7ad40',
+                    background: 'none', border: 'none', color: '#DFFE00',
                     fontSize: 13, fontWeight: 700, cursor: 'pointer',
                     letterSpacing: '0.06em', textTransform: 'uppercase',
                     textDecoration: 'underline', textDecorationColor: 'rgba(223,254,0,0.4)',
@@ -653,8 +653,8 @@ export default function ContactForm() {
                     padding: '16px 32px',
                     background: status === 'sending'
                       ? 'rgba(223,254,0,0.5)'
-                      : 'linear-gradient(135deg, #f7ad40 0%, #C2E000 100%)',
-                    color: '#002042',
+                      : 'linear-gradient(135deg, #DFFE00 0%, #C2E000 100%)',
+                    color: '#000',
                     fontWeight: 800, fontSize: 14,
                     letterSpacing: '0.08em', textTransform: 'uppercase',
                     border: 'none', borderRadius: 100,

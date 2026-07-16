@@ -25,11 +25,11 @@ interface DialogContextType {
 const DialogContext = createContext<DialogContextType | undefined>(undefined);
 
 const THEME: Record<DialogType, { bg: string; border: string; iconColor: string; btnBg: string; btnHover: string }> = {
-  info:    { bg: '#002042', border: '#333333', iconColor: '#e43c44', btnBg: '#003866', btnHover: '#333333' },
+  info:    { bg: '#111111', border: '#333333', iconColor: '#e43c44', btnBg: '#222222', btnHover: '#333333' },
   success: { bg: '#0a1a10', border: '#11331a', iconColor: '#4ade80', btnBg: '#1a5c38', btnHover: '#1e7a48' },
   warning: { bg: '#1a1400', border: '#4d3300', iconColor: '#fbbf24', btnBg: '#7a4a00', btnHover: '#9a5a00' },
   error:   { bg: '#1a0505', border: '#441111', iconColor: '#e43c44', btnBg: '#441111', btnHover: '#661a1a' },
-  confirm: { bg: '#002042', border: '#333333', iconColor: '#e43c44', btnBg: '#003866', btnHover: '#333333' },
+  confirm: { bg: '#111111', border: '#333333', iconColor: '#e43c44', btnBg: '#222222', btnHover: '#333333' },
   danger:  { bg: '#1a0505', border: '#441111', iconColor: '#e43c44', btnBg: '#441111', btnHover: '#661a1a' },
 };
 
@@ -141,7 +141,7 @@ export function DialogProvider({ children }: { children: ReactNode }) {
           <div
             onClick={e => e.stopPropagation()}
             style={{
-              background: '#001a33',
+              background: '#0a0a0a',
               border: `1px solid ${theme.border}`,
               borderRadius: 20,
               padding: '32px 28px 24px',
@@ -188,14 +188,14 @@ export function DialogProvider({ children }: { children: ReactNode }) {
                   onClick={() => close(false)}
                   style={{
                     flex: 1, padding: '12px 16px',
-                    background: '#002042',
+                    background: '#111111',
                     border: '1px solid #262626',
                     borderRadius: 12, fontSize: 13, fontWeight: 600,
                     color: '#8899aa', cursor: 'pointer',
                     transition: 'all 0.15s',
                   }}
                   onMouseEnter={e => { e.currentTarget.style.background = '#262626'; e.currentTarget.style.color = '#e5e5e5'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = '#002042'; e.currentTarget.style.color = '#8899aa'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = '#111111'; e.currentTarget.style.color = '#8899aa'; }}
                 >
                   {cancelText}
                 </button>
@@ -212,7 +212,7 @@ export function DialogProvider({ children }: { children: ReactNode }) {
                       : `linear-gradient(135deg, ${theme.iconColor}, ${theme.iconColor}cc)`,
                   border: 'none',
                   borderRadius: 12, fontSize: 13, fontWeight: 700,
-                  color: type === 'success' || type === 'info' || type === 'confirm' ? '#002042' : '#fff',
+                  color: type === 'success' || type === 'info' || type === 'confirm' ? '#000' : '#fff',
                   cursor: 'pointer',
                   transition: 'all 0.15s',
                   boxShadow: `0 4px 16px ${theme.iconColor}30`,

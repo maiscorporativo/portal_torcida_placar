@@ -16,7 +16,7 @@ function DetailRow({ icon, title, text }: { icon: React.ReactNode; title: string
         {icon}
       </div>
       <div style={{ minWidth: 0, flex: 1 }}>
-        <h4 style={{ fontSize: 14, fontWeight: 700, color: '#002042', margin: '0 0 4px', overflowWrap: 'break-word', wordBreak: 'break-word' }}>{title}</h4>
+        <h4 style={{ fontSize: 14, fontWeight: 700, color: '#111', margin: '0 0 4px', overflowWrap: 'break-word', wordBreak: 'break-word' }}>{title}</h4>
         <p style={{ fontSize: 13, color: '#6b7280', margin: 0, lineHeight: 1.6, overflowWrap: 'break-word', wordBreak: 'break-word' }}>{text}</p>
       </div>
     </div>
@@ -87,7 +87,7 @@ export default function PackageModal({ isOpen, onClose, pkg }: PackageModalProps
         style={{
           position: 'relative',
           background: '#fff',
-          color: '#002042',
+          color: '#111',
           width: '100%',
           maxWidth: 760,
           borderRadius: 20,
@@ -135,7 +135,7 @@ export default function PackageModal({ isOpen, onClose, pkg }: PackageModalProps
           <div style={{ position: 'absolute', bottom: 20, left: 24, right: 24 }}>
             <span style={{
               display: 'inline-block',
-              background: '#e43c44', color: '#002042',
+              background: '#e43c44', color: '#000',
               fontSize: 10, fontWeight: 800,
               padding: '3px 10px', borderRadius: 5,
               letterSpacing: '0.1em', textTransform: 'uppercase',
@@ -192,7 +192,7 @@ export default function PackageModal({ isOpen, onClose, pkg }: PackageModalProps
               <p style={{ fontSize: 11, color: '#9ca3af', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', margin: '0 0 6px' }}>
                 Valor Estimado
               </p>
-              <div style={{ fontSize: 30, fontWeight: 800, color: '#002042', margin: '0 0 4px', lineHeight: 1.1 }}>
+              <div style={{ fontSize: 30, fontWeight: 800, color: '#111', margin: '0 0 4px', lineHeight: 1.1 }}>
                 {getCurrencySymbol(pkg.currency || 'BRL')} {formatDisplayPrice(pkg.price, pkg.currency || 'BRL')}
               </div>
               <span style={{ fontSize: 12, color: '#9ca3af' }}>por pessoa</span>
@@ -204,7 +204,7 @@ export default function PackageModal({ isOpen, onClose, pkg }: PackageModalProps
                   rel="noopener noreferrer"
                   style={{
                     width: '100%', padding: '13px 0',
-                    background: '#e43c44', color: '#002042',
+                    background: '#e43c44', color: '#000',
                     fontWeight: 800, fontSize: 14,
                     border: 'none', borderRadius: 12,
                     cursor: 'pointer', transition: 'opacity 0.15s',

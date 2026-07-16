@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary-main: #002042;
-  --color-gold: #f7ad40;
-  --color-gold-secondary: #e84e27;
+  --color-primary-main: #000000;
+  --color-gold: #DFFE00;
+  --color-gold-secondary: #EFFF40;
   --color-accent: #F8FAFC;
   --font-sans: 'Montserrat', sans-serif;
   --font-heading: 'Montserrat', sans-serif;
@@ -71,7 +71,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #001a33;
+  background: #09090b;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -86,7 +86,7 @@ body {
 /* Firefox */
 html {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-gold) #001a33;
+  scrollbar-color: var(--color-gold) #09090b;
 }
 
 /* 3D Hover Effect Utilities */
@@ -205,11 +205,11 @@ html {
 /* ── Autofill: elimina flash branco/amarelo do browser ──────────────── */
 @keyframes autofillFix {
   from {
-    background-color: #001a33;
+    background-color: #09090b;
   }
 
   to {
-    background-color: #001a33;
+    background-color: #09090b;
   }
 }
 
@@ -220,8 +220,8 @@ input:-webkit-autofill:active {
   animation-name: autofillFix;
   animation-duration: 0.001s;
   animation-fill-mode: both;
-  -webkit-box-shadow: 0 0 0 1000px #001a33 inset !important;
-  box-shadow: 0 0 0 1000px #001a33 inset !important;
+  -webkit-box-shadow: 0 0 0 1000px #09090b inset !important;
+  box-shadow: 0 0 0 1000px #09090b inset !important;
   -webkit-text-fill-color: #ffffff !important;
   caret-color: #ffffff;
   color-scheme: dark;

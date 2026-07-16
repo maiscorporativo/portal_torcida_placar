@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  CheckCircle2, Plane, BedDouble, Ticket,
-  MapPin, Calendar, ChevronDown, Users,
+  CheckCircle2, Calendar, Users,
   MessageCircle, AlertTriangle, Zap, Trophy, Headset, ChevronRight
 } from 'lucide-react';
 import { useContentConfig } from '../hooks/useContentConfig';
 import type { TrendingPackage } from '../types';
+import { appendCurrentQuery } from '../utils/slug';
 
 // Helper to convert YouTube URL to Embed URL
 const getYoutubeEmbedUrl = (url: string) => {
@@ -51,91 +51,6 @@ const injectScript = (id: string, content: string, target: 'head' | 'body' = 'he
     else document.body.prepend(wrapper);
   } catch (err) { console.error('Script injection failed:', err); }
 };
-
-/* --- Hodômetro (Speedometer) Component --- */
-function Speedometer() {
-  const [speed, setSpeed] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-      const scrollPercent = scrollTop / docHeight;
-      // Max speed = 350
-      setSpeed(Math.min(350, Math.max(0, Math.floor(scrollPercent * 350))));
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // init
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Calculate rotation (-130deg to +130deg)
-  const rotation = -130 + (speed / 350) * 260;
-
-  return (
-    <div style={{
-      position: 'fixed',
-      bottom: '30px',
-      right: '30px',
-      width: '120px',
-      height: '120px',
-      background: 'radial-gradient(circle, #002b52 0%, #001529 100%)',
-      borderRadius: '50%',
-      border: '2px solid #333',
-      boxShadow: '0 10px 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(228,60,68,0.2)',
-      zIndex: 9999,
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      pointerEvents: 'none'
-    }}>
-      {/* Ticks */}
-      {[...Array(11)].map((_, i) => (
-        <div key={i} style={{
-          position: 'absolute',
-          width: i % 2 === 0 ? '4px' : '2px',
-          height: i % 2 === 0 ? '12px' : '8px',
-          background: i > 7 ? '#f7ad40' : '#555',
-          top: '4px',
-          left: '50%',
-          transformOrigin: '50% 56px',
-          transform: `translateX(-50%) rotate(${-130 + (i * 26)}deg)`
-        }} />
-      ))}
-      {/* Needle */}
-      <div style={{
-        position: 'absolute',
-        width: '4px',
-        height: '50px',
-        background: 'linear-gradient(to top, transparent, #f7ad40)',
-        bottom: '50%',
-        left: 'calc(50% - 2px)',
-        transformOrigin: 'bottom center',
-        transform: `rotate(${rotation}deg)`,
-        transition: 'transform 0.1s ease-out'
-      }} />
-      {/* Center dot */}
-      <div style={{
-        position: 'absolute',
-        width: '12px',
-        height: '12px',
-        background: '#f7ad40',
-        borderRadius: '50%',
-        top: 'calc(50% - 6px)',
-        left: 'calc(50% - 6px)',
-        boxShadow: '0 0 10px rgba(228,60,68,0.8)'
-      }} />
-
-      {/* Speed text */}
-      <div style={{ position: 'absolute', bottom: '15px', textAlign: 'center' }}>
-        <div style={{ fontSize: '24px', fontWeight: 900, color: '#fff', lineHeight: '1' }}>{speed}</div>
-        <div style={{ fontSize: '10px', fontWeight: 800, color: '#f7ad40', letterSpacing: '1px' }}>KM/H</div>
-      </div>
-    </div>
-  );
-}
 
 /* --- Football Kick Animation Component --- */
 /* --- Sport Ball Scroll Animation Component --- */
@@ -306,7 +221,9 @@ function PackageNavbar({ onBook, isMobile }: { onBook: () => void, isMobile: boo
       <div style={{ maxWidth: 1400, margin: '0 auto', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         {/* Logos */}
         <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 12 : 24, cursor: 'pointer' }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-          <img src="/emais-logo.svg" alt="E-Mais" className="h-10 w-auto" />
+          <div style={{ fontSize: isMobile ? 18 : 24 }} className="font-black uppercase tracking-tighter text-white">
+            TORCIDA <span className="text-gold">PLACAR</span>
+          </div>
         </div>
 
         {/* Links */}
@@ -318,7 +235,7 @@ function PackageNavbar({ onBook, isMobile }: { onBook: () => void, isMobile: boo
 
         {/* CTA */}
         <button onClick={onBook} style={{
-          background: '#f7ad40', color: '#002042', border: 'none', borderRadius: 8, padding: isMobile ? '8px 12px' : '10px 20px', fontSize: isMobile ? 11 : 13, fontWeight: 800, cursor: 'pointer',
+          background: '#DFFE00', color: '#000', border: 'none', borderRadius: 8, padding: isMobile ? '8px 12px' : '10px 20px', fontSize: isMobile ? 11 : 13, fontWeight: 800, cursor: 'pointer',
           textTransform: 'uppercase', letterSpacing: '0.05em'
         }}>
           Comprar Pacote
@@ -326,7 +243,7 @@ function PackageNavbar({ onBook, isMobile }: { onBook: () => void, isMobile: boo
       </div>
       <style>{`
         @media (min-width: 768px) { .md-flex { display: flex !important; } }
-        .nav-link:hover { color: #f7ad40 !important; }
+        .nav-link:hover { color: #DFFE00 !important; }
       `}</style>
     </nav>
   );
@@ -343,7 +260,6 @@ export default function PackageLP() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState(0); // Para a seção de Programação
-  const [activePkgTab, setActivePkgTab] = useState(0); // Para a seção de Pacotes
   const [pricingMode, setPricingMode] = useState<'individual' | 'duplo'>('duplo');
   const mauticContainerRef = useRef<HTMLDivElement>(null);
 
@@ -355,16 +271,23 @@ export default function PackageLP() {
 
   useEffect(() => {
     if (!loading && packages.length > 0) {
-      const index = Number(id);
-      const p = packages[index];
+      // Resolve por slug (URL permanente) e, se for numérico, pelo índice (links antigos)
+      const raw = (id || '').toLowerCase();
+      let p = packages.find(pk => (pk.slug || '').toLowerCase() === raw);
+      if (!p && /^\d+$/.test(raw)) p = packages[Number(raw)];
       if (!p) { setNotFound(true); return; }
       if (p.status !== 'approved' && !localStorage.getItem('emais_marketing_auth')) {
         navigate('/');
         return;
       }
+      if (p.externalUrl && p.externalUrl.trim() !== '') {
+        // Repassa UTMs/fbclid/gclid da URL atual para a LP externa
+        window.location.href = appendCurrentQuery(p.externalUrl.trim());
+        return;
+      }
       setPkg(p);
       setNotFound(false);
-      if (p.title) document.title = `${p.title} | E-Mais`;
+      if (p.title) document.title = `${p.title} | Torcida Placar`;
       if (p.trackingScriptHead) injectScript('lp-tracking-head', p.trackingScriptHead, 'head');
       if (p.trackingScriptBody) injectScript('lp-tracking-body', p.trackingScriptBody, 'body');
       return () => {
@@ -501,8 +424,8 @@ export default function PackageLP() {
   // --- END MAUTIC LOGIC ---
 
   if (loading) return (
-    <div style={{ minHeight: '100vh', background: '#001529', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20 }}>
-      <div style={{ width: 48, height: 48, border: '4px solid #002042', borderTopColor: '#f7ad40', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+    <div style={{ minHeight: '100vh', background: '#050505', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20 }}>
+      <div style={{ width: 48, height: 48, border: '4px solid #111', borderTopColor: '#DFFE00', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
@@ -510,10 +433,10 @@ export default function PackageLP() {
   if (showSuccess) return <SuccessSection redirectUrl={pkg?.redirectUrl} />;
 
   if (notFound || !pkg) return (
-    <div style={{ minHeight: '100vh', background: '#001529', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff', padding: 20 }}>
-      <AlertTriangle size={64} color="#f7ad40" style={{ marginBottom: 24 }} />
+    <div style={{ minHeight: '100vh', background: '#050505', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff', padding: 20 }}>
+      <AlertTriangle size={64} color="#DFFE00" style={{ marginBottom: 24 }} />
       <h1 style={{ fontSize: 32, fontWeight: 900 }}>Pacote indisponível</h1>
-      <button onClick={() => navigate('/')} style={{ background: '#f7ad40', color: '#002042', fontWeight: 800, padding: '12px 32px', borderRadius: 8, marginTop: 24, cursor: 'pointer', border: 'none' }}>Voltar para Home</button>
+      <button onClick={() => navigate('/')} style={{ background: '#DFFE00', color: '#000', fontWeight: 800, padding: '12px 32px', borderRadius: 8, marginTop: 24, cursor: 'pointer', border: 'none' }}>Voltar para Home</button>
     </div>
   );
 
@@ -543,7 +466,7 @@ export default function PackageLP() {
   const sport = pkg.sportType || 'automobilismo';
 
   const theme = {
-    primary: '#f7ad40',
+    primary: '#DFFE00',
     accent: sport === 'automobilismo' ? 'rgba(228,60,68,0.15)' :
       sport === 'futebol' ? 'rgba(34,197,94,0.15)' :
         sport === 'tenis' ? 'rgba(234,88,12,0.15)' :
@@ -559,10 +482,9 @@ export default function PackageLP() {
   };
 
   return (
-    <div style={{ background: '#001529', color: '#fff', fontFamily: 'Montserrat, sans-serif', minHeight: '100vh', overflowX: 'hidden' }}>
+    <div style={{ background: '#050505', color: '#fff', fontFamily: 'Montserrat, sans-serif', minHeight: '100vh', overflowX: 'hidden' }}>
       <PackageNavbar onBook={() => document.getElementById('conversion-section')?.scrollIntoView({ behavior: 'smooth' })} isMobile={isMobile} />
-      {/* {sport === 'automobilismo' && <Speedometer />} */}
-      {(sport === 'futebol' || sport === 'tenis' || sport === 'basquete' || sport === 'lutas' || sport === 'automobilismo') && <SportBall sport={sport} isMobile={isMobile} />}
+      {(sport === 'futebol' || sport === 'tenis' || sport === 'basquete' || sport === 'lutas' || sport === 'automobilismo') && <SportBall sport={sport} />}
 
       {/* --- HERO SECTION --- */}
       <section style={{ position: 'relative', height: '100vh', minHeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
@@ -570,7 +492,7 @@ export default function PackageLP() {
           {pkg.heroType === 'image' || (!pkg.videoUrl && pkg.heroImage) ? (
             <img src={fixImgPath(pkg.heroImage || pkg.img)} alt={pkg.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           ) : pkg.videoUrl ? (
-            <div style={{ width: '100%', height: '100%', position: 'relative', background: '#001529' }}>
+            <div style={{ width: '100%', height: '100%', position: 'relative', background: '#050505' }}>
               <img src={fixImgPath(pkg.img)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0, zIndex: -1, opacity: 0.5 }} />
               {pkg.videoUrl.includes('youtube.com') || pkg.videoUrl.includes('youtu.be') ? (
                 <iframe
@@ -602,7 +524,7 @@ export default function PackageLP() {
           </p>
           <button
             onClick={() => document.getElementById('pacotes')?.scrollIntoView({ behavior: 'smooth' })}
-            style={{ background: '#f7ad40', color: '#002042', fontWeight: 800, fontSize: isMobile ? 14 : 15, padding: isMobile ? '14px 28px' : '16px 36px', borderRadius: 8, cursor: 'pointer', border: 'none', display: 'inline-flex', alignItems: 'center', gap: 10, transition: 'transform 0.2s' }}
+            style={{ background: '#DFFE00', color: '#000', fontWeight: 800, fontSize: isMobile ? 14 : 15, padding: isMobile ? '14px 28px' : '16px 36px', borderRadius: 8, cursor: 'pointer', border: 'none', display: 'inline-flex', alignItems: 'center', gap: 10, transition: 'transform 0.2s' }}
             onMouseOver={e => e.currentTarget.style.transform = 'scale(1.05)'}
             onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}
           >
@@ -616,14 +538,14 @@ export default function PackageLP() {
         <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 20 }}>
           {cards.map((c: any, i: number) => (
             <div key={i} style={{
-              background: '#001a33', border: '1px solid #003866', borderRadius: 16, padding: '32px',
+              background: '#0a0a0a', border: '1px solid #222', borderRadius: 16, padding: '32px',
               boxShadow: '0 20px 40px rgba(0,0,0,0.5)', transition: 'border-color 0.3s',
               cursor: 'default'
             }}
               onMouseOver={e => e.currentTarget.style.borderColor = '#4ade80'}
-              onMouseOut={e => e.currentTarget.style.borderColor = '#003866'}
+              onMouseOut={e => e.currentTarget.style.borderColor = '#222'}
             >
-              <div style={{ width: 48, height: 48, background: '#f7ad40', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24 }}>
+              <div style={{ width: 48, height: 48, background: '#DFFE00', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 24 }}>
                 {c.icone === 'Zap' ? <Zap size={24} color="#fff" /> : c.icone === 'Trophy' ? <Trophy size={24} color="#fff" /> : <Headset size={24} color="#fff" />}
               </div>
               <h3 style={{ fontSize: 20, fontWeight: 800, margin: '0 0 12px' }}>{c.titulo}</h3>
@@ -635,7 +557,7 @@ export default function PackageLP() {
 
       {/* --- PROGRAMAÇÃO --- */}
       <section id="programacao" style={{
-        position: 'relative', padding: isMobile ? '60px 20px' : '100px 20px', background: '#001529', overflow: 'hidden'
+        position: 'relative', padding: isMobile ? '60px 20px' : '100px 20px', background: '#050505', overflow: 'hidden'
       }}>
         {/* Local Background Video */}
         {sport === 'automobilismo' ? (
@@ -649,7 +571,7 @@ export default function PackageLP() {
             <source src="/flag_quadriculada.mp4" type="video/mp4" />
           </video>
         ) : (
-          <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at center, #002042 0%, #001529 100%)', opacity: 0.5 }}></div>
+          <div style={{ position: 'absolute', inset: 0, background: 'radial-gradient(circle at center, #111 0%, #050505 100%)', opacity: 0.5 }}></div>
         )}
 
         {/* Red speed gradient */}
@@ -657,7 +579,7 @@ export default function PackageLP() {
 
         <div style={{ maxWidth: 1000, margin: '0 auto', position: 'relative', zIndex: 10 }}>
           <h2 style={{ fontSize: 'clamp(2.5rem, 5vw, 3.5rem)', fontWeight: 900, margin: '0 0 8px' }}>
-            Programação do <span style={{ color: '#f7ad40' }}>Fim de Semana</span>
+            Programação do <span style={{ color: '#DFFE00' }}>Fim de Semana</span>
           </h2>
           <p style={{ fontSize: 16, color: '#aaa', margin: '0 0 40px' }}>Dias de ação e emoção</p>
 
@@ -667,9 +589,9 @@ export default function PackageLP() {
                 key={i}
                 onClick={() => setActiveTab(i)}
                 style={{
-                  background: activeTab === i ? '#f7ad40' : 'transparent',
-                  color: activeTab === i ? '#002042' : '#888',
-                  border: `1px solid ${activeTab === i ? '#f7ad40' : '#333'}`,
+                  background: activeTab === i ? '#DFFE00' : 'transparent',
+                  color: activeTab === i ? '#000' : '#888',
+                  border: `1px solid ${activeTab === i ? '#DFFE00' : '#333'}`,
                   borderRadius: 8, padding: '12px 24px', fontSize: 13, fontWeight: 800,
                   cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.05em',
                   transition: 'all 0.3s'
@@ -680,13 +602,13 @@ export default function PackageLP() {
             ))}
           </div>
 
-          <div style={{ background: '#001a33', border: '1px solid #003866', borderRadius: 16, padding: '40px', minHeight: 200 }}>
-            <h3 style={{ fontSize: 24, color: '#f7ad40', fontWeight: 800, margin: '0 0 24px' }}>{programacao[activeTab]?.titulo_dia || programacao[activeTab]?.data}</h3>
+          <div style={{ background: '#0a0a0a', border: '1px solid #222', borderRadius: 16, padding: '40px', minHeight: 200 }}>
+            <h3 style={{ fontSize: 24, color: '#DFFE00', fontWeight: 800, margin: '0 0 24px' }}>{programacao[activeTab]?.titulo_dia || programacao[activeTab]?.data}</h3>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {(programacao[activeTab]?.atividades || []).length > 0 ? (
                 programacao[activeTab]?.atividades.map((ativ: any, i: number) => (
-                  <div key={i} style={{ display: 'flex', gap: 24, padding: '16px 24px', borderRadius: 12, border: '1px solid #003866', background: '#002042' }}>
+                  <div key={i} style={{ display: 'flex', gap: 24, padding: '16px 24px', borderRadius: 12, border: '1px solid #222', background: '#111' }}>
                     <div style={{ color: '#fbbf24', fontWeight: 800, minWidth: 100 }}>{ativ.horario}</div>
                     <div style={{ color: '#fff' }}>{ativ.descricao}</div>
                   </div>
@@ -703,16 +625,16 @@ export default function PackageLP() {
       <section id="pacotes" style={{ padding: isMobile ? '60px 20px' : '100px 20px', background: '#0a0a0b' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 60 }}>
-            <h2 style={{ fontSize: 'clamp(2.5rem, 5vw, 3.5rem)', fontWeight: 900, margin: '0 0 16px' }}>Pacotes de <span style={{ color: '#f7ad40' }}>Viagem Completos</span></h2>
+            <h2 style={{ fontSize: 'clamp(2.5rem, 5vw, 3.5rem)', fontWeight: 900, margin: '0 0 16px' }}>Pacotes de <span style={{ color: '#DFFE00' }}>Viagem Completos</span></h2>
             <p style={{ fontSize: 16, color: '#aaa', maxWidth: 600, margin: '0 auto' }}>Voe com tudo incluído. Hospedagem, transporte e ingressos em um único pacote.</p>
 
             {/* Pricing Toggle */}
-            <div style={{ marginTop: 40, display: 'inline-flex', background: '#002042', padding: 6, borderRadius: 100, border: '1px solid #003866' }}>
+            <div style={{ marginTop: 40, display: 'inline-flex', background: '#111', padding: 6, borderRadius: 100, border: '1px solid #222' }}>
               <button
                 onClick={() => setPricingMode('individual')}
                 style={{
-                  background: pricingMode === 'individual' ? '#f7ad40' : 'transparent',
-                  color: pricingMode === 'individual' ? '#002042' : '#888',
+                  background: pricingMode === 'individual' ? '#DFFE00' : 'transparent',
+                  color: pricingMode === 'individual' ? '#000' : '#888',
                   border: 'none', borderRadius: 100, padding: '10px 24px', fontSize: 13, fontWeight: 800, cursor: 'pointer', transition: 'all 0.3s'
                 }}
               >
@@ -721,8 +643,8 @@ export default function PackageLP() {
               <button
                 onClick={() => setPricingMode('duplo')}
                 style={{
-                  background: pricingMode === 'duplo' ? '#f7ad40' : 'transparent',
-                  color: pricingMode === 'duplo' ? '#002042' : '#888',
+                  background: pricingMode === 'duplo' ? '#DFFE00' : 'transparent',
+                  color: pricingMode === 'duplo' ? '#000' : '#888',
                   border: 'none', borderRadius: 100, padding: '10px 24px', fontSize: 13, fontWeight: 800, cursor: 'pointer', transition: 'all 0.3s'
                 }}
               >
@@ -747,20 +669,20 @@ export default function PackageLP() {
 
                 return (
                   <div key={i} style={{
-                    background: '#001529', border: '1px solid #003866', borderRadius: 24, padding: '40px',
+                    background: '#050505', border: '1px solid #222', borderRadius: 24, padding: '40px',
                     display: 'flex', flexDirection: 'column', transition: 'transform 0.3s, border-color 0.3s',
                     position: 'relative', overflow: 'hidden'
                   }}
                     className="package-card-hover"
                   >
-                    <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: 4, background: i === 0 ? '#f7ad40' : '#fbbf24' }} />
+                    <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: 4, background: i === 0 ? '#DFFE00' : '#fbbf24' }} />
 
                     <h3 style={{ fontSize: 24, fontWeight: 900, margin: '0 0 8px', color: '#fff' }}>{op.nome || op.tipo}</h3>
                     <p style={{ color: '#888', fontSize: 14, lineHeight: 1.5, marginBottom: 24 }}>{op.descricao_card || 'Experiência completa com todo o conforto e exclusividade.'}</p>
 
-                    <div style={{ borderTop: '1px solid #003866', borderBottom: '1px solid #003866', margin: '0 0 32px', padding: '24px 0' }}>
+                    <div style={{ borderTop: '1px solid #222', borderBottom: '1px solid #222', margin: '0 0 32px', padding: '24px 0' }}>
                       <div style={{ fontSize: 13, color: '#666', fontWeight: 800, textTransform: 'uppercase', marginBottom: 8 }}>{parcelas}x de</div>
-                      <div style={{ fontSize: isMobile ? 28 : 40, fontWeight: 900, color: i === 0 ? '#f7ad40' : '#fbbf24', display: 'flex', alignItems: 'baseline', gap: 6, flexWrap: 'wrap' }}>
+                      <div style={{ fontSize: isMobile ? 28 : 40, fontWeight: 900, color: i === 0 ? '#DFFE00' : '#fbbf24', display: 'flex', alignItems: 'baseline', gap: 6, flexWrap: 'wrap' }}>
                         <span style={{ fontSize: isMobile ? 16 : 20 }}>{op.moeda || 'USD'}</span>
                         <span style={{ fontSize: isMobile ? 32 : 48 }}>{price || op.valor_parcela || op.preço || '---'}</span>
                       </div>
@@ -772,7 +694,7 @@ export default function PackageLP() {
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
                         {showInclusos.slice(0, 5).map((inc: any, j: number) => (
                           <div key={j} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
-                            <CheckCircle2 size={16} color={i === 0 ? '#f7ad40' : '#fbbf24'} style={{ marginTop: 2, flexShrink: 0 }} />
+                            <CheckCircle2 size={16} color={i === 0 ? '#DFFE00' : '#fbbf24'} style={{ marginTop: 2, flexShrink: 0 }} />
                             <div>
                               <div style={{ fontSize: 14, fontWeight: 700, color: '#eee' }}>{inc.titulo}</div>
                               {inc.descricao && <div style={{ fontSize: 12, color: '#777', marginTop: 2 }}>{inc.descricao}</div>}
@@ -785,8 +707,8 @@ export default function PackageLP() {
                     <button
                       onClick={() => document.getElementById('conversion-section')?.scrollIntoView({ behavior: 'smooth' })}
                       style={{
-                        background: i === 0 ? '#f7ad40' : '#002042',
-                        color: i === 0 ? '#002042' : '#fff', border: i === 0 ? 'none' : '1px solid #333',
+                        background: i === 0 ? '#DFFE00' : '#111',
+                        color: i === 0 ? '#000' : '#fff', border: i === 0 ? 'none' : '1px solid #333',
                         borderRadius: 12, padding: '16px', fontSize: 14, fontWeight: 800,
                         cursor: 'pointer', transition: 'all 0.2s', textTransform: 'uppercase'
                       }}
@@ -810,14 +732,14 @@ export default function PackageLP() {
           `}</style>
 
           {pacotes && !Array.isArray(pacotes) && pacotes.datas && (
-            <div style={{ marginTop: 60, padding: '40px', background: '#002042', borderRadius: 24, border: '1px solid #003866', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 32, textAlign: 'center' }}>
+            <div style={{ marginTop: 60, padding: '40px', background: '#111', borderRadius: 24, border: '1px solid #222', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 32, textAlign: 'center' }}>
               <div>
-                <div style={{ color: '#f7ad40', marginBottom: 12 }}><Calendar size={32} style={{ margin: '0 auto' }} /></div>
+                <div style={{ color: '#DFFE00', marginBottom: 12 }}><Calendar size={32} style={{ margin: '0 auto' }} /></div>
                 <div style={{ fontSize: 12, color: '#666', fontWeight: 800, textTransform: 'uppercase', marginBottom: 4 }}>Partida</div>
                 <div style={{ fontSize: 18, fontWeight: 800 }}>{pacotes.datas.partida}</div>
               </div>
               <div>
-                <div style={{ color: '#f7ad40', marginBottom: 12 }}><Calendar size={32} style={{ margin: '0 auto' }} /></div>
+                <div style={{ color: '#DFFE00', marginBottom: 12 }}><Calendar size={32} style={{ margin: '0 auto' }} /></div>
                 <div style={{ fontSize: 12, color: '#666', fontWeight: 800, textTransform: 'uppercase', marginBottom: 4 }}>Retorno</div>
                 <div style={{ fontSize: 18, fontWeight: 800 }}>{pacotes.datas.retorno}</div>
               </div>
@@ -832,28 +754,28 @@ export default function PackageLP() {
       </section>
 
       {/* --- EXPERIÊNCIA --- */}
-      <section id="experiencia" style={{ padding: isMobile ? '60px 20px' : '100px 20px', background: '#001529' }}>
+      <section id="experiencia" style={{ padding: isMobile ? '60px 20px' : '100px 20px', background: '#050505' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 32 : 60, alignItems: 'center' }}>
           <div>
-            <h2 style={{ fontSize: isMobile ? '2.2rem' : 'clamp(2.5rem, 4vw, 3.5rem)', fontWeight: 900, margin: '0 0 24px', lineHeight: 1.1 }}>Uma Experiência <span style={{ color: '#f7ad40' }}>Inesquecível</span></h2>
+            <h2 style={{ fontSize: isMobile ? '2.2rem' : 'clamp(2.5rem, 4vw, 3.5rem)', fontWeight: 900, margin: '0 0 24px', lineHeight: 1.1 }}>Uma Experiência <span style={{ color: '#DFFE00' }}>Inesquecível</span></h2>
             <div style={{ fontSize: isMobile ? 14 : 16, color: '#aaa', lineHeight: 1.8 }} dangerouslySetInnerHTML={{ __html: pkg.experienciaSection || 'Nossos pacotes garantem que você vivencie cada momento memorável com conforto, segurança e acesso a áreas exclusivas que a maioria dos visitantes nunca experimenta.' }} />
           </div>
           <div style={{ display: 'grid', gap: 20 }}>
             {pkg.galleryImages ? (
               pkg.galleryImages.split(';').filter(Boolean).slice(0, 2).map((img, i) => (
-                <img key={i} src={fixImgPath(img.trim())} alt="Experiência" style={{ width: '100%', borderRadius: 24, border: '1px solid #003866' }} />
+                <img key={i} src={fixImgPath(img.trim())} alt="Experiência" style={{ width: '100%', borderRadius: 24, border: '1px solid #222' }} />
               ))
             ) : (
-              <div style={{ width: '100%', height: 300, background: '#002042', borderRadius: 24, border: '1px solid #003866' }} />
+              <div style={{ width: '100%', height: 300, background: '#111', borderRadius: 24, border: '1px solid #222' }} />
             )}
           </div>
         </div>
       </section>
 
       {/* --- PARCERIA --- */}
-      <section style={{ padding: isMobile ? '60px 20px' : '100px 20px', background: '#002042', borderTop: '1px solid #003866', borderBottom: '1px solid #003866', textAlign: 'center' }}>
+      <section style={{ padding: isMobile ? '60px 20px' : '100px 20px', background: '#111', borderTop: '1px solid #222', borderBottom: '1px solid #222', textAlign: 'center' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
-          <p style={{ fontSize: 12, color: '#f7ad40', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Realizado por:</p>
+          <p style={{ fontSize: 12, color: '#DFFE00', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>Realizado por:</p>
           <h2 style={{ fontSize: isMobile ? '2rem' : 'clamp(2.5rem, 4vw, 3.5rem)', fontWeight: 900, color: '#fff', margin: '0 0 16px' }}>Uma Parceria de Referência</h2>
           <p style={{ fontSize: isMobile ? 15 : 18, color: '#aaa', maxWidth: 700, margin: '0 auto 40px', lineHeight: 1.6 }}>
             Duas empresas líderes unidas para levar você ao espetáculo mais emocionante do automobilismo mundial.
@@ -862,23 +784,23 @@ export default function PackageLP() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 30, textAlign: 'left' }}>
 
             {/* Card Mais Corporativo */}
-            <div style={{ background: '#001529', border: '1px solid #003866', borderRadius: 24, padding: '40px', display: 'flex', flexDirection: 'column', transition: 'border-color 0.3s' }} onMouseOver={e => e.currentTarget.style.borderColor = '#f7ad40'} onMouseOut={e => e.currentTarget.style.borderColor = '#003866'}>
+            <div style={{ background: '#050505', border: '1px solid #222', borderRadius: 24, padding: '40px', display: 'flex', flexDirection: 'column', transition: 'border-color 0.3s' }} onMouseOver={e => e.currentTarget.style.borderColor = '#DFFE00'} onMouseOut={e => e.currentTarget.style.borderColor = '#222'}>
               <img src="/logo_mais.png" alt="Mais Corporativo" style={{ height: 65, objectFit: 'contain', marginBottom: 24, alignSelf: 'flex-start' }} />
               <p style={{ color: '#aaa', fontSize: 16, lineHeight: 1.6, flex: 1, marginBottom: 32 }}>
                 Especialistas em viagens e experiências corporativas de alto padrão. Do planejamento ao retorno, cuidamos de cada detalhe para que você viva momentos inesquecíveis com segurança e conforto.
               </p>
-              <div style={{ alignSelf: 'flex-start', background: 'rgba(228,60,68,0.1)', border: '1px solid rgba(228,60,68,0.2)', color: '#f7ad40', padding: '8px 16px', borderRadius: 100, fontSize: 12, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <div style={{ alignSelf: 'flex-start', background: 'rgba(228,60,68,0.1)', border: '1px solid rgba(228,60,68,0.2)', color: '#DFFE00', padding: '8px 16px', borderRadius: 100, fontSize: 12, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Turismo Corporativo
               </div>
             </div>
 
             {/* Card E-Mais */}
-            <div style={{ background: '#001529', border: '1px solid #003866', borderRadius: 24, padding: '40px', display: 'flex', flexDirection: 'column', transition: 'border-color 0.3s' }} onMouseOver={e => e.currentTarget.style.borderColor = '#f7ad40'} onMouseOut={e => e.currentTarget.style.borderColor = '#003866'}>
+            <div style={{ background: '#050505', border: '1px solid #222', borderRadius: 24, padding: '40px', display: 'flex', flexDirection: 'column', transition: 'border-color 0.3s' }} onMouseOver={e => e.currentTarget.style.borderColor = '#DFFE00'} onMouseOut={e => e.currentTarget.style.borderColor = '#222'}>
               <img src="/logo_emais.png" alt="E-Mais" style={{ height: 40, objectFit: 'contain', marginBottom: 24, alignSelf: 'flex-start' }} />
               <p style={{ color: '#aaa', fontSize: 16, lineHeight: 1.6, flex: 1, marginBottom: 32 }}>
                 A plataforma de experiências esportivas que conecta você aos maiores eventos do mundo com tecnologia, agilidade e personalização de ponta a ponta.
               </p>
-              <div style={{ alignSelf: 'flex-start', background: 'rgba(228,60,68,0.1)', border: '1px solid rgba(228,60,68,0.2)', color: '#f7ad40', padding: '8px 16px', borderRadius: 100, fontSize: 12, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              <div style={{ alignSelf: 'flex-start', background: 'rgba(228,60,68,0.1)', border: '1px solid rgba(228,60,68,0.2)', color: '#DFFE00', padding: '8px 16px', borderRadius: 100, fontSize: 12, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                 Experiências Esportivas
               </div>
             </div>
@@ -889,11 +811,11 @@ export default function PackageLP() {
 
       {/* --- CONVERSION / FORM SECTION --- */}
       <section id="conversion-section" style={{ padding: '120px 20px', background: '#0a0a0b', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', height: 1, background: 'linear-gradient(to right, transparent, #f7ad40, transparent)' }} />
+        <div style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', height: 1, background: 'linear-gradient(to right, transparent, #DFFE00, transparent)' }} />
 
         <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(400px, 1fr))', gap: isMobile ? 40 : 80, alignItems: 'center' }}>
           <div style={{ textAlign: isMobile ? 'center' : 'left' }}>
-            <h2 style={{ fontSize: isMobile ? '2.5rem' : 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 900, lineHeight: 1.1, marginBottom: isMobile ? 16 : 32 }}>Garanta seu lugar na <span style={{ color: '#f7ad40' }}>História.</span></h2>
+            <h2 style={{ fontSize: isMobile ? '2.5rem' : 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 900, lineHeight: 1.1, marginBottom: isMobile ? 16 : 32 }}>Garanta seu lugar na <span style={{ color: '#DFFE00' }}>História.</span></h2>
             <p style={{ fontSize: isMobile ? 16 : 20, color: '#888', lineHeight: 1.6, marginBottom: isMobile ? 32 : 48 }}>Preencha os dados ao lado e receba um atendimento personalizado de nossos especialistas em eventos esportivos.</p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
@@ -903,8 +825,8 @@ export default function PackageLP() {
                 'Empresa consolidada há mais de 15 anos'
               ].map((text, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                  <div style={{ width: 24, height: 24, background: '#f7ad40', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <CheckCircle2 size={14} color="#002042" />
+                  <div style={{ width: 24, height: 24, background: '#DFFE00', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <CheckCircle2 size={14} color="#000" />
                   </div>
                   <span style={{ fontSize: 16, fontWeight: 600 }}>{text}</span>
                 </div>
@@ -913,7 +835,7 @@ export default function PackageLP() {
           </div>
 
           <div style={{ position: 'relative' }}>
-            <div className="glass-form" style={{ background: '#001a33', border: '1px solid #003866', borderRadius: 32, padding: isMobile ? '24px' : '40px' }}>
+            <div className="glass-form" style={{ background: '#0a0a0a', border: '1px solid #222', borderRadius: 32, padding: isMobile ? '24px' : '40px' }}>
               <div style={{ textAlign: 'center', marginBottom: 32 }}>
                 <h3 style={{ fontSize: 24, fontWeight: 900, margin: 0 }}>Cotação de Pacote</h3>
                 <p style={{ fontSize: 14, color: '#666', marginTop: 8 }}>Mantenha seus dados atualizados para contato.</p>
@@ -930,8 +852,8 @@ export default function PackageLP() {
 
               {submitting && !showSuccess && (
                 <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.85)', borderRadius: 32, zIndex: 90, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                  <div style={{ width: 44, height: 44, border: '4px solid rgba(255,255,255,0.1)', borderTopColor: '#f7ad40', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-                  <p style={{ marginTop: 20, fontSize: 12, fontWeight: 800, color: '#f7ad40' }}>Processando...</p>
+                  <div style={{ width: 44, height: 44, border: '4px solid rgba(255,255,255,0.1)', borderTopColor: '#DFFE00', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+                  <p style={{ marginTop: 20, fontSize: 12, fontWeight: 800, color: '#DFFE00' }}>Processando...</p>
                 </div>
               )}
             </div>
@@ -939,7 +861,7 @@ export default function PackageLP() {
         </div>
       </section>
 
-      <footer style={{ padding: isMobile ? '40px 20px' : '80px 40px', textAlign: 'center', borderTop: '1px solid #002042' }}>
+      <footer style={{ padding: isMobile ? '40px 20px' : '80px 40px', textAlign: 'center', borderTop: '1px solid #111' }}>
         <div className="text-2xl font-black uppercase tracking-tighter text-white" style={{ marginBottom: 16, opacity: 0.5, fontSize: isMobile ? 18 : 24 }}>
           TORCIDA <span className="text-gold">PLACAR</span>
         </div>
@@ -960,18 +882,18 @@ export default function PackageLP() {
         .mauticform-grid-row { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 16px !important; width: 100% !important; }
         .mautic-premium-form .mauticform-row { margin-bottom: 0; width: 100% !important; }
         .mautic-premium-form label { display: block; font-size: 10px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
-        .mautic-premium-form label span.mauticform-required { color: #f7ad40; }
+        .mautic-premium-form label span.mauticform-required { color: #DFFE00; }
         .mautic-premium-form input:not([type="radio"]), .mautic-premium-form select, .mautic-premium-form textarea { width: 100% !important; height: 45px !important; background: rgba(255, 255, 255, 0.03) !important; border: 1px solid rgba(255, 255, 255, 0.08) !important; border-radius: 10px !important; padding: 0 16px !important; color: #fff !important; font-size: 14px !important; outline: none; transition: all 0.2s; }
-        .mautic-premium-form input:focus { border-color: #f7ad40; background: rgba(228, 60, 68, 0.04); }
+        .mautic-premium-form input:focus { border-color: #DFFE00; background: rgba(228, 60, 68, 0.04); }
         .mautic-premium-form .mauticform-radiogrp-options { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; width: 100%; }
         @media (max-width: 600px) { .mauticform-grid-row { grid-template-columns: 1fr !important; } }
         .mautic-premium-form input[type="radio"] { appearance: none; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.15); border-radius: 50%; cursor: pointer; position: relative; flex-shrink: 0; }
-        .mautic-premium-form input[type="radio"]:checked { border-color: #f7ad40; }
-        .mautic-premium-form input[type="radio"]:checked::after { content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 8px; height: 8px; background: #f7ad40; border-radius: 50%; }
+        .mautic-premium-form input[type="radio"]:checked { border-color: #DFFE00; }
+        .mautic-premium-form input[type="radio"]:checked::after { content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 8px; height: 8px; background: #DFFE00; border-radius: 50%; }
         .mautic-premium-form .mauticform-radiogrp-row { display: flex; align-items: center; gap: 8px; margin: 4px 0; cursor: pointer; }
         .mautic-premium-form .mauticform-radiogrp-label { font-size: 13px; color: #999; cursor: pointer; }
         .mautic-premium-form input[type="radio"]:checked + .mauticform-radiogrp-label { color: #fff; }
-        .mautic-premium-form .mauticform-button { width: 100% !important; height: 54px !important; background: #f7ad40 !important; border: none !important; border-radius: 12px !important; color: #002042 !important; font-size: 16px !important; font-weight: 900 !important; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; transition: all 0.3s; margin-top: 12px; }
+        .mautic-premium-form .mauticform-button { width: 100% !important; height: 54px !important; background: #DFFE00 !important; border: none !important; border-radius: 12px !important; color: #000 !important; font-size: 16px !important; font-weight: 900 !important; text-transform: uppercase; letter-spacing: 0.1em; cursor: pointer; transition: all 0.3s; margin-top: 12px; }
         .mautic-premium-form .mauticform-button:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(228,60,68,0.3); }
         .mautic-premium-form .mauticform-description, .mautic-premium-form .mauticform-helpmessage { display: none !important; }
 
@@ -987,13 +909,13 @@ export default function PackageLP() {
 
 function SuccessSection({ redirectUrl }: { redirectUrl?: string }) {
   return (
-    <div style={{ minHeight: '100vh', background: '#001529', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 40 }}>
+    <div style={{ minHeight: '100vh', background: '#050505', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: 40 }}>
       <div style={{ width: 100, height: 100, borderRadius: '50%', background: 'rgba(228,60,68,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 32 }}>
-        <CheckCircle2 size={60} color="#f7ad40" />
+        <CheckCircle2 size={60} color="#DFFE00" />
       </div>
       <h1 style={{ fontSize: 'clamp(2.5rem, 6vw, 4rem)', fontWeight: 900, marginBottom: 16, color: '#fff' }}>SOLICITAÇÃO RECEBIDA</h1>
       <p style={{ fontSize: 20, color: '#888', maxWidth: 600, lineHeight: 1.6 }}>Obrigado pelo seu interesse. Um de nossos especialistas entrará em contato via WhatsApp ou E-mail em breve.</p>
-      {redirectUrl && <p style={{ fontSize: 14, color: '#f7ad40', marginTop: 32, fontWeight: 700 }}>Redirecionando você...</p>}
+      {redirectUrl && <p style={{ fontSize: 14, color: '#DFFE00', marginTop: 32, fontWeight: 700 }}>Redirecionando você...</p>}
     </div>
   );
 }

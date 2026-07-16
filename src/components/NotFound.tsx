@@ -29,7 +29,7 @@ export default function NotFound() {
           to="/"
           style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
-            background: '#e43c44', color: '#002042', fontWeight: 700, fontSize: 14,
+            background: '#e43c44', color: '#000', fontWeight: 700, fontSize: 14,
             padding: '12px 24px', borderRadius: 40, textDecoration: 'none',
             transition: 'opacity .2s',
           }}

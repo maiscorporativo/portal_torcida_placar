@@ -1,14 +1,14 @@
 export default function PartnersMarquee() {
   return (
-    <section className="-mt-12 relative z-20 py-20 border-b border-white/5 overflow-hidden flex flex-col items-center" style={{ background: 'linear-gradient(to bottom, transparent 0%, #001a33 60%)' }}>
+    <section className="-mt-12 relative z-20 py-20 border-b border-white/5 overflow-hidden flex flex-col items-center" style={{ background: 'linear-gradient(to bottom, transparent 0%, #09090b 60%)' }}>
       <p className="text-[11px] text-white uppercase tracking-[0.2em] mb-10 font-bold z-10 px-6 text-center">
         Eventos mais iconicos e importantes do mundo esportivo
       </p>
 
       <div className="w-full relative flex overflow-hidden py-4">
         {/* Gradient masks for smooth fade in/out on edges */}
-        <div className="absolute inset-y-0 left-0 w-16 md:w-32 bg-gradient-to-r from-[#001a33] to-transparent z-10 pointer-events-none"></div>
-        <div className="absolute inset-y-0 right-0 w-16 md:w-32 bg-gradient-to-l from-[#001a33] to-transparent z-10 pointer-events-none"></div>
+        <div className="absolute inset-y-0 left-0 w-16 md:w-32 bg-gradient-to-r from-[#09090b] to-transparent z-10 pointer-events-none"></div>
+        <div className="absolute inset-y-0 right-0 w-16 md:w-32 bg-gradient-to-l from-[#09090b] to-transparent z-10 pointer-events-none"></div>
 
         <div className="flex w-max animate-marquee">
           {[1, 2, 3, 4].map((set) => (

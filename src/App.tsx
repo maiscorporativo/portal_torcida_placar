@@ -18,10 +18,10 @@ import NotFound from './components/NotFound';
 import { SelectedPackageProvider } from './hooks/useSelectedPackage';
 
 const PAGE_TITLES: Record<string, string> = {
-  '/':            'E-Mais — A Maior Jornada do Esporte',
-  '/admin':       'Admin Vendas | E-Mais',
-  '/admin-master': 'Admin Mestre | E-Mais',
-  '/marketing':    'Marketing & Conversão | E-Mais',
+  '/':            'Torcida Placar — A Maior Jornada do Esporte',
+  '/admin':       'Admin Vendas | Torcida Placar',
+  '/admin-master': 'Admin Mestre | Torcida Placar',
+  '/marketing':    'Marketing & Conversão | Torcida Placar',
 };
 
 function usePageTitle() {

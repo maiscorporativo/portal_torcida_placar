@@ -20,7 +20,7 @@ export default function EventsSection() {
   };
 
   return (
-    <section id="events" className="py-20 px-6 bg-gradient-to-b from-primary-main to-[#001a33]">
+    <section id="events" className="py-20 px-6 bg-gradient-to-b from-primary-main to-[#09090b]">
       <div className="max-w-[1400px] mx-auto">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 border-b border-white/10 pb-4">
             <h2 className="text-3xl font-semibold">Explorar Eventos</h2>

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import type { EventHighlight, TrendingPackage } from '../types';
+import { slugify, uniqueSlug } from '../utils/slug';
 import {
   DEFAULT_EVENTS,
   DEFAULT_PACKAGES,
@@ -18,9 +19,9 @@ function getSessionToken(): string {
       || '';
 }
 
-const CACHE_KEY = 'torcida_content_cache';
+const CACHE_KEY = 'emais_content_cache';
 const CACHE_VERSION = 'v3'; // Bump this to force-clear all browser caches
-const CACHE_VER_KEY = 'torcida_cache_version';
+const CACHE_VER_KEY = 'emais_cache_version';
 
 /* ── Audit helpers ── */
 const now = () => new Date().toISOString();
@@ -93,7 +94,7 @@ function saveCache(data: ContentStore) {
 }
 
 async function fetchContent(): Promise<ContentStore> {
-  const res = await fetch('/api/content');
+  const res = await fetch('/api/content?t=' + Date.now(), { cache: 'no-store' });
   if (!res.ok) throw new Error('API error');
   const json = await res.json();
   return {
@@ -141,7 +142,7 @@ export function useContentConfig() {
     if (isSaving.current) return;
     if (hasLocalUnsaved.current) return; // não sobrescrebe se há alterações locais não salvas
     try {
-      const res = await fetch('/api/content');
+      const res = await fetch('/api/content?t=' + Date.now(), { cache: 'no-store' });
       if (!res.ok) return;
       const json = await res.json();
       const key = json.updated_at ?? JSON.stringify(json).slice(0, 40);
@@ -210,14 +211,15 @@ export function useContentConfig() {
       }),
     };
 
-    isSaving.current = true;
     hasLocalUnsaved.current = true;
+    isSaving.current = true;
     setSaving(true);
-    setSaveError(false);
+    setSaveError(null);
     setContent(merged);
     saveCache(merged);
     lastUpdated.current = JSON.stringify(merged).slice(0, 40);
     window.dispatchEvent(new Event(UPDATE_EVENT));
+
     try {
       const heroRaw = localStorage.getItem('emais_image_config');
       const heroImages = heroRaw ? JSON.parse(heroRaw) : {};
@@ -228,7 +230,6 @@ export function useContentConfig() {
     } catch (err: any) {
       console.warn('[useContentConfig] API save failed:', err);
       setSaveError(err.message || 'Erro desconhecido ao salvar');
-      throw err;
     } finally {
       isSaving.current = false;
       setSaving(false);
@@ -265,7 +266,15 @@ export function useContentConfig() {
   const updatePackage = useCallback((i: number, d: Partial<TrendingPackage>) => {
     const user = getAdminUser();
     const audit = { updatedBy: user, updatedAt: now(), status: 'pending' as const };
-    return persist({ ...content, packages: content.packages.map((p, idx) => idx === i ? { ...p, ...d, ...audit } : p) });
+    const patch = { ...d };
+    // Slug automático: acompanha o título enquanto não for personalizado manualmente
+    const src = content.packages[i];
+    if (src && patch.title !== undefined && patch.slug === undefined) {
+      if (!src.slug || src.slug === slugify(src.title)) {
+        patch.slug = uniqueSlug(slugify(patch.title), content.packages.filter((_, j) => j !== i).map(p => p.slug || ''));
+      }
+    }
+    return persist({ ...content, packages: content.packages.map((p, idx) => idx === i ? { ...p, ...patch, ...audit } : p) });
   }, [content, persist]);
 
   const setPackageTrending = useCallback((i: number, isTrending: boolean) =>
@@ -296,6 +305,30 @@ export function useContentConfig() {
   const addPackage = useCallback(() => {
     const user = getAdminUser();
     return persist({ ...content, packages: [...content.packages, { tag: 'NOVO', title: 'Novo Pacote', loc: 'Local', date: 'Data', price: '0', img: '', badge: 'novo', description: '', flightDetails: '', hotelDetails: '', ticketDetails: '', createdBy: user, createdAt: now() }] });
+  }, [content, persist]);
+
+  /** Duplica um pacote com TODO o conteúdo da LP (hero, cards, programação,
+   *  pacotes/tipos, experiência, banco de imagens, template de esporte, integrações).
+   *  A cópia nasce pendente, fora de "Em Alta" e com auditoria zerada. */
+  const duplicatePackage = useCallback((i: number) => {
+    const src = content.packages[i];
+    if (!src) return;
+    const user = getAdminUser();
+    const copy: TrendingPackage = {
+      ...src,
+      title: `${src.title} (cópia)`,
+      slug: src.slug ? uniqueSlug(`${src.slug}-copia`, content.packages.map(p => p.slug || '')) : undefined,
+      status: 'pending',
+      isTrending: false,
+      createdBy: user, createdAt: now(),
+      updatedBy: undefined, updatedAt: undefined,
+      approvedBy: undefined, approvedAt: undefined,
+      rejectedBy: undefined, rejectedAt: undefined,
+      deletedAt: undefined, deletedBy: undefined,
+    };
+    const arr = [...content.packages];
+    arr.splice(i + 1, 0, copy);
+    return persist({ ...content, packages: arr });
   }, [content, persist]);
 
   const removePackage = useCallback((i: number, deletedBy?: string) => {
@@ -365,7 +398,7 @@ export function useContentConfig() {
     loading, saving, saveError,
     updateEvent, addEvent, removeEvent, reorderEvent,
     approveEvent, rejectEvent, masterUpdateEvent,
-    updatePackage, addPackage, removePackage, restorePackage, permanentRemovePackage, reorderPackage,
+    updatePackage, addPackage, duplicatePackage, removePackage, restorePackage, permanentRemovePackage, reorderPackage,
     approvePackage, rejectPackage, masterUpdatePackage, marketingUpdatePackage, setPackageTrending,
     addCategory, removeCategory, updateCategory, reorderCategory, updateCategoryIcon,
     resetAll, exportConfig, importConfig,

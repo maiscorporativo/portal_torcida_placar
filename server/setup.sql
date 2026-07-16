@@ -1,8 +1,8 @@
 -- E-Mais CMS - MySQL Schema
 -- Run this file to create the database and table
 
-CREATE DATABASE IF NOT EXISTS torcida CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE torcida;
+CREATE DATABASE IF NOT EXISTS emais_cms CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE emais_cms;
 
 CREATE TABLE IF NOT EXISTS site_content (
   id INT PRIMARY KEY DEFAULT 1,

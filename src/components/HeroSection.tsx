@@ -64,7 +64,7 @@ export default function HeroSection() {
           <h1 className="text-[2.2rem] sm:text-[3.2rem] lg:text-[4.2rem] font-black uppercase leading-[1.05] mb-6 tracking-tight">
             Sua Convocação<br />
             Está<br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#f7ad40] to-white">Aberta</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#DFFE00] to-white">Aberta</span>
           </h1>
           <p className="text-neutral-400 font-medium text-lg mb-10 max-w-md leading-relaxed pr-4">
             Viaje com quem já levou multidões para os maiores palcos do mundo. A sua próxima história no esporte começa aqui.

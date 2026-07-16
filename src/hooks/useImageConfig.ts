@@ -3,11 +3,11 @@ import { DEFAULT_IMAGES, STORAGE_KEY, type ImageKey } from '../imageConfig';
 
 type ImageOverrides = Partial<Record<ImageKey, string>>;
 
-const UPDATE_EVENT = 'torcida_image_update';
-const CONTENT_UPDATE_EVENT = 'torcida_content_update';
+const UPDATE_EVENT = 'emais_image_update';
+const CONTENT_UPDATE_EVENT = 'emais_content_update';
 const getSessionToken = () =>
-  localStorage.getItem('torcida_admin_token') ||
-  localStorage.getItem('torcida_master_token') ||
+  localStorage.getItem('emais_admin_token') ||
+  localStorage.getItem('emais_master_token') ||
   '';
 
 
@@ -21,7 +21,7 @@ function loadOverrides(): ImageOverrides {
 async function pushHeroToApi(overrides: ImageOverrides) {
   try {
     // Read current content from cache and attach updated hero images
-    const contentRaw = localStorage.getItem('torcida_content_cache');
+    const contentRaw = localStorage.getItem('emais_content_cache');
     const content = contentRaw ? JSON.parse(contentRaw) : {};
     await fetch('/api/content', {
       method: 'PUT',
@@ -39,7 +39,7 @@ export function useImageConfig() {
 
   // Fetch hero images from API on mount
   useEffect(() => {
-    fetch('/api/content')
+    fetch('/api/content?t=' + Date.now(), { cache: 'no-store' })
       .then(r => r.json())
       .then(data => {
         if (data.heroImages && Object.keys(data.heroImages).length > 0) {

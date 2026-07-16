@@ -5,6 +5,8 @@ import { useContentConfig } from '../hooks/useContentConfig';
 import type { TrendingPackage } from '../types';
 import { useToast } from '../components/ui/ToastProvider';
 import { useDialog } from '../components/ui/DialogProvider';
+import LPContentEditor from './LPEditor';
+import { sanitizeSlugInput } from '../utils/slug';
 
 const MASTER_AUTH_KEY = 'emais_master_auth';
 
@@ -35,7 +37,7 @@ const CURRENCIES = [
 
 const TAG_OPTIONS = ['NOVO LOTE', 'QUASE ESGOTADO', 'VIP', 'DESTAQUE', 'EXCLUSIVO', 'ÚLTIMAS VAGAS', 'PREMIUM'];
 
-const IS = { background: '#001529', border: '1px solid #333333', borderRadius: 7, color: '#e8edf2', fontSize: 13, padding: '8px 10px', outline: 'none', width: '100%', boxSizing: 'border-box' as const };
+const IS = { background: '#050505', border: '1px solid #333333', borderRadius: 7, color: '#e8edf2', fontSize: 13, padding: '8px 10px', outline: 'none', width: '100%', boxSizing: 'border-box' as const };
 
 /* ── Login ── */
 function MasterLogin({ onLogin }: { onLogin: () => void }) {
@@ -74,11 +76,11 @@ function MasterLogin({ onLogin }: { onLogin: () => void }) {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#001529', fontFamily: 'Inter, system-ui, sans-serif' }}>
-      <form onSubmit={handleSubmit} style={{ background: '#001a33', border: '1px solid #333333', borderRadius: 16, padding: '40px 36px', width: 360, display: 'flex', flexDirection: 'column', gap: 16, boxShadow: '0 24px 64px rgba(0,0,0,.8)', animation: shake ? 'shake .4s ease' : 'none' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#050505', fontFamily: 'Inter, system-ui, sans-serif' }}>
+      <form onSubmit={handleSubmit} style={{ background: '#0a0a0a', border: '1px solid #333333', borderRadius: 16, padding: '40px 36px', width: 360, display: 'flex', flexDirection: 'column', gap: 16, boxShadow: '0 24px 64px rgba(0,0,0,.8)', animation: shake ? 'shake .4s ease' : 'none' }}>
         <div style={{ textAlign: 'center', marginBottom: 8 }}>
-          <div style={{ width: 52, height: 52, background: 'linear-gradient(135deg, #f7ad40, #d45f1a)', borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-            <Shield size={26} color="#002042" />
+          <div style={{ width: 52, height: 52, background: 'linear-gradient(135deg, #DFFE00, #d45f1a)', borderRadius: 14, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+            <Shield size={26} color="#000" />
           </div>
           <h1 style={{ fontSize: 22, fontWeight: 800, color: '#e8edf2', margin: 0 }}>Admin Mestre</h1>
           <p style={{ fontSize: 13, color: '#737373', marginTop: 6 }}>Painel de Aprovação — Zago</p>
@@ -86,19 +88,19 @@ function MasterLogin({ onLogin }: { onLogin: () => void }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           <label style={{ fontSize: 11, color: '#737373', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Usuário</label>
           <input type="text" value={username} onChange={e => { setUsername(e.target.value); setError(''); }} placeholder="Usuário" autoFocus autoComplete="username"
-            style={{ background: '#001529', border: `1px solid ${error ? '#7a1a1a' : '#333333'}`, borderRadius: 8, color: '#e8edf2', fontSize: 14, padding: '11px 14px', outline: 'none' }}
-            onFocus={e => e.target.style.borderColor = '#f7ad40'} onBlur={e => e.target.style.borderColor = error ? '#7a1a1a' : '#333333'}
+            style={{ background: '#050505', border: `1px solid ${error ? '#7a1a1a' : '#333333'}`, borderRadius: 8, color: '#e8edf2', fontSize: 14, padding: '11px 14px', outline: 'none' }}
+            onFocus={e => e.target.style.borderColor = '#DFFE00'} onBlur={e => e.target.style.borderColor = error ? '#7a1a1a' : '#333333'}
           />
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
           <label style={{ fontSize: 11, color: '#737373', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Senha</label>
           <input type="password" value={pw} onChange={e => { setPw(e.target.value); setError(''); }} placeholder="••••••••" autoComplete="current-password"
-            style={{ background: '#001529', border: `1px solid ${error ? '#7a1a1a' : '#333333'}`, borderRadius: 8, color: '#e8edf2', fontSize: 14, padding: '11px 14px', outline: 'none' }}
-            onFocus={e => e.target.style.borderColor = '#f7ad40'} onBlur={e => e.target.style.borderColor = error ? '#7a1a1a' : '#333333'}
+            style={{ background: '#050505', border: `1px solid ${error ? '#7a1a1a' : '#333333'}`, borderRadius: 8, color: '#e8edf2', fontSize: 14, padding: '11px 14px', outline: 'none' }}
+            onFocus={e => e.target.style.borderColor = '#DFFE00'} onBlur={e => e.target.style.borderColor = error ? '#7a1a1a' : '#333333'}
           />
           {error && <span style={{ fontSize: 11, color: '#f87171' }}>{error}</span>}
         </div>
-        <button type="submit" disabled={loading} style={{ background: 'linear-gradient(135deg, #f7ad40, #d45f1a)', color: '#002042', border: 'none', borderRadius: 8, padding: '12px', fontSize: 14, fontWeight: 700, cursor: loading ? 'wait' : 'pointer', opacity: loading ? 0.7 : 1 }}>
+        <button type="submit" disabled={loading} style={{ background: 'linear-gradient(135deg, #DFFE00, #d45f1a)', color: '#000', border: 'none', borderRadius: 8, padding: '12px', fontSize: 14, fontWeight: 700, cursor: loading ? 'wait' : 'pointer', opacity: loading ? 0.7 : 1 }}>
           {loading ? 'Verificando…' : 'Entrar'}
         </button>
       </form>
@@ -109,7 +111,7 @@ function MasterLogin({ onLogin }: { onLogin: () => void }) {
 
 /* ── Helpers ── */
 function MField({ label, icon, value, onChange, textarea = false, rows = 2 }: { label: string; icon?: React.ReactNode; value: string; onChange: (v: string) => void; textarea?: boolean; rows?: number }) {
-  const focus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => { e.target.style.borderColor = '#f7ad40'; };
+  const focus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => { e.target.style.borderColor = '#DFFE00'; };
   const blur =  (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => { e.target.style.borderColor = '#333333'; };
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -139,9 +141,9 @@ function ImageUploadField({ label, labelIcon, value, onChange }: { label: string
         {value && <img src={value} alt="" style={{ width: 44, height: 44, objectFit: 'cover', borderRadius: 6, flexShrink: 0 }} />}
         <div style={{ flex: 1, display: 'flex', gap: 6 }}>
           <input value={value} onChange={e => onChange(e.target.value)} placeholder="https://..." style={{ ...IS, flex: 1 }}
-            onFocus={e => e.target.style.borderColor = '#f7ad40'} onBlur={e => e.target.style.borderColor = '#333333'} />
+            onFocus={e => e.target.style.borderColor = '#DFFE00'} onBlur={e => e.target.style.borderColor = '#333333'} />
           <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFile} />
-          <button type="button" onClick={() => fileRef.current?.click()} title="Upload" style={{ padding: '8px 10px', background: '#002042', border: '1px solid #333333', borderRadius: 7, color: '#f7ad40', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+          <button type="button" onClick={() => fileRef.current?.click()} title="Upload" style={{ padding: '8px 10px', background: '#111111', border: '1px solid #333333', borderRadius: 7, color: '#DFFE00', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
             <Upload size={14} />
           </button>
         </div>
@@ -166,7 +168,7 @@ function AuditTrail({ pkg }: { pkg: TrendingPackage }) {
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginTop: 4 }}>
       {rows.map(r => (
-        <span key={r.label} style={{ fontSize: 10, background: '#001529', border: `1px solid ${r.color}33`, borderRadius: 6, padding: '3px 8px', color: r.color, display: 'flex', gap: 4, alignItems: 'center' }}>
+        <span key={r.label} style={{ fontSize: 10, background: '#050505', border: `1px solid ${r.color}33`, borderRadius: 6, padding: '3px 8px', color: r.color, display: 'flex', gap: 4, alignItems: 'center' }}>
           <span style={{ opacity: 0.7 }}>{r.label}:</span>
           <strong>{r.user}</strong>
           {r.at && <span style={{ opacity: 0.5 }}>· {fmtDate(r.at)}</span>}
@@ -202,14 +204,14 @@ function PackageReviewCard({ pkg, onApprove, onReject, onUpdate, onRemove, trend
   const handleSaveOnly    = () => { onUpdate({ ...local, updatedBy: masterUser, updatedAt: now() }); toast('Salvo sem aprovar.', 'info'); };
 
   const statusColor = pkg.status === 'approved' ? '#4ade80' : pkg.status === 'rejected' ? '#f87171' : '#fbbf24';
-  const statusBg    = pkg.status === 'approved' ? '#0d3320' : pkg.status === 'rejected' ? '#3a0d0d' : '#002b52';
+  const statusBg    = pkg.status === 'approved' ? '#0d3320' : pkg.status === 'rejected' ? '#3a0d0d' : '#1a1a1a';
   const statusLabel = pkg.status === 'approved' ? '✅ Aprovado' : pkg.status === 'rejected' ? '❌ Rejeitado' : '🟡 Pendente';
 
   return (
-    <div style={{ background: '#002042', border: `1px solid ${pkg.status === 'pending' || !pkg.status ? '#333333' : pkg.status === 'approved' ? '#1a5c38' : '#7a1a1a'}`, borderRadius: 12, overflow: 'hidden' }}>
+    <div style={{ background: '#111111', border: `1px solid ${pkg.status === 'pending' || !pkg.status ? '#333333' : pkg.status === 'approved' ? '#1a5c38' : '#7a1a1a'}`, borderRadius: 12, overflow: 'hidden' }}>
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', cursor: 'pointer' }} onClick={() => setOpen(o => !o)}>
-        {pkg.img ? <img src={pkg.img} alt={pkg.title} style={{ width: 52, height: 52, objectFit: 'cover', borderRadius: 8, flexShrink: 0 }} /> : <div style={{ width: 52, height: 52, background: '#002b52', borderRadius: 8, flexShrink: 0 }} />}
+        {pkg.img ? <img src={pkg.img} alt={pkg.title} style={{ width: 52, height: 52, objectFit: 'cover', borderRadius: 8, flexShrink: 0 }} /> : <div style={{ width: 52, height: 52, background: '#1a1a1a', borderRadius: 8, flexShrink: 0 }} />}
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 14, fontWeight: 700, color: '#e8edf2' }}>{pkg.title || 'Sem título'}</span>
@@ -261,7 +263,7 @@ function PackageReviewCard({ pkg, onApprove, onReject, onUpdate, onRemove, trend
               <label style={{ fontSize: 10, color: '#737373', fontWeight: 600, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 4 }}><Globe2 size={11} /> Moeda</label>
               <select value={local.currency || 'BRL'} onChange={e => set({ currency: e.target.value })}
                 style={{ ...IS, cursor: 'pointer' }}
-                onFocus={e => e.target.style.borderColor = '#f7ad40'} onBlur={e => e.target.style.borderColor = '#333333'}>
+                onFocus={e => e.target.style.borderColor = '#DFFE00'} onBlur={e => e.target.style.borderColor = '#333333'}>
                 {CURRENCIES.map(c => <option key={c.code} value={c.code}>{c.label}</option>)}
               </select>
             </div>
@@ -273,7 +275,7 @@ function PackageReviewCard({ pkg, onApprove, onReject, onUpdate, onRemove, trend
               <label style={{ fontSize: 10, color: '#737373', fontWeight: 600, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 4 }}><Award size={11} /> Tag do Card</label>
               <select value={local.tag} onChange={e => set({ tag: e.target.value })}
                 style={{ ...IS, cursor: 'pointer' }}
-                onFocus={e => e.target.style.borderColor = '#f7ad40'} onBlur={e => e.target.style.borderColor = '#333333'}>
+                onFocus={e => e.target.style.borderColor = '#DFFE00'} onBlur={e => e.target.style.borderColor = '#333333'}>
                 {TAG_OPTIONS.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
@@ -282,7 +284,7 @@ function PackageReviewCard({ pkg, onApprove, onReject, onUpdate, onRemove, trend
               <label style={{ fontSize: 10, color: '#737373', fontWeight: 600, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 4 }}><Package size={11} /> Categoria</label>
               <select value={local.category || ''} onChange={e => set({ category: e.target.value })}
                 style={{ ...IS, cursor: 'pointer' }}
-                onFocus={e => e.target.style.borderColor = '#f7ad40'} onBlur={e => e.target.style.borderColor = '#333333'}>
+                onFocus={e => e.target.style.borderColor = '#DFFE00'} onBlur={e => e.target.style.borderColor = '#333333'}>
                 <option value="">Selecione uma categoria</option>
                 {['Futebol', 'Futebol Americano', 'F1 / Automobilismo', 'UFC / MMA', 'Tênis', 'Basquete', 'WWE / Wrestling', 'Multiesportivo', 'Outros'].map(c => (
                   <option key={c} value={c}>{c}</option>
@@ -290,7 +292,7 @@ function PackageReviewCard({ pkg, onApprove, onReject, onUpdate, onRemove, trend
               </select>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, paddingBottom: 2 }}>
-              <label style={{ fontSize: 10, color: local.isTrending ? '#f7ad40' : '#737373', fontWeight: local.isTrending ? 700 : 600, textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 4 }}><Flame size={11} /> Em Alta</label>
+              <label style={{ fontSize: 10, color: local.isTrending ? '#DFFE00' : '#737373', fontWeight: local.isTrending ? 700 : 600, textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', gap: 4 }}><Flame size={11} /> Em Alta</label>
               <button type="button" onClick={() => {
                 if (!local.isTrending && trendingCount >= MAX_TRENDING) {
                   showAlert(`Já existem ${MAX_TRENDING} pacotes em "Pacotes em Alta". Desative um antes de ativar este.`, 'warning');
@@ -302,12 +304,12 @@ function PackageReviewCard({ pkg, onApprove, onReject, onUpdate, onRemove, trend
                   width: 44, height: 24, borderRadius: 12, border: 'none',
                   cursor: local.isTrending || trendingCount < MAX_TRENDING ? 'pointer' : 'not-allowed',
                   position: 'relative', transition: 'background .2s',
-                  background: local.isTrending ? '#f7ad40' : '#002b52',
+                  background: local.isTrending ? '#DFFE00' : '#1a1a1a',
                   opacity: !local.isTrending && trendingCount >= MAX_TRENDING ? 0.5 : 1,
                 }}>
                 <span style={{ position: 'absolute', top: 3, width: 18, height: 18, borderRadius: '50%', background: '#fff', transition: 'left .2s', left: local.isTrending ? 23 : 3 }} />
               </button>
-              <span style={{ fontSize: 10, color: local.isTrending ? '#f7ad40' : '#737373' }}>{local.isTrending ? 'Sim' : 'Não'}</span>
+              <span style={{ fontSize: 10, color: local.isTrending ? '#DFFE00' : '#737373' }}>{local.isTrending ? 'Sim' : 'Não'}</span>
               {!local.isTrending && trendingCount >= MAX_TRENDING && (
                 <span style={{ fontSize: 9, color: '#f87171', textAlign: 'center', lineHeight: 1.3 }}>Lotado ({trendingCount}/{MAX_TRENDING})</span>
               )}
@@ -322,18 +324,33 @@ function PackageReviewCard({ pkg, onApprove, onReject, onUpdate, onRemove, trend
           <MField label="Detalhes da Hospedagem" icon={<BedDouble size={11} />} value={local.hotelDetails ?? ''}  onChange={v => set({ hotelDetails: v })} textarea />
           <MField label="Detalhes dos Ingressos" icon={<Ticket size={11} />} value={local.ticketDetails ?? ''} onChange={v => set({ ticketDetails: v })} textarea />
 
+          {/* Slug — URL permanente da LP */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <label style={{ fontSize: 10, color: '#737373', fontWeight: 600, textTransform: 'uppercase', display: 'flex', alignItems: 'center', gap: 4 }}><Globe2 size={11} /> URL da LP (slug)</label>
+            <input value={local.slug ?? ''} onChange={e => set({ slug: sanitizeSlugInput(e.target.value) })}
+              placeholder="ex: gp-de-monaco-2026" style={IS}
+              onFocus={e => e.target.style.borderColor = '#DFFE00'} onBlur={e => e.target.style.borderColor = '#333333'} />
+            <span style={{ fontSize: 10, color: '#4ade80' }}>Link da LP: /pacote/{local.slug || '<índice numérico>'}</span>
+          </div>
+
+          {/* ── Conteúdo da Landing Page — editor compartilhado (Admin/Master/Marketing) ── */}
+          <div style={{ borderTop: '1px solid #333333', paddingTop: 14, marginTop: 4 }}>
+            <p style={{ fontSize: 11, color: '#737373', margin: '0 0 12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Conteúdo da Landing Page do Pacote</p>
+            <LPContentEditor pkg={local} onUpdate={set} tokenKey="emais_master_token" />
+          </div>
+
           {/* Actions */}
           <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end', paddingTop: 4 }}>
             {pkg.status === 'approved' ? (
-              <button onClick={handleSaveApprove} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 18px', background: 'linear-gradient(135deg, #f7ad40, #d45f1a)', color: '#002042', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+              <button onClick={handleSaveApprove} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 18px', background: 'linear-gradient(135deg, #DFFE00, #d45f1a)', color: '#000', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
                 <Check size={14} /> Salvar Edições
               </button>
             ) : (
               <>
-                <button onClick={handleSaveOnly} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px', background: '#002042', color: '#e8edf2', border: '1px solid #333333', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                <button onClick={handleSaveOnly} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 16px', background: '#111111', color: '#e8edf2', border: '1px solid #333333', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
                   Salvar sem Aprovar
                 </button>
-                <button onClick={handleSaveApprove} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 18px', background: 'linear-gradient(135deg, #f7ad40, #d45f1a)', color: '#002042', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+                <button onClick={handleSaveApprove} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 18px', background: 'linear-gradient(135deg, #DFFE00, #d45f1a)', color: '#000', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
                   <Check size={14} /> Salvar e Aprovar
                 </button>
               </>
@@ -448,9 +465,9 @@ function UsersTab() {
     return '👤 Admin';
   };
   const roleBg    = (r: string) => {
-    if (r === 'master') return { background: '#002b52', color: '#f7ad40', border: '1px solid #f7ad40' };
-    if (r === 'marketing') return { background: '#002b52', color: '#3b82f6', border: '1px solid #3b82f6' };
-    return { background: '#002b52', color: '#737373', border: '1px solid #333333' };
+    if (r === 'master') return { background: '#1a1a1a', color: '#DFFE00', border: '1px solid #DFFE00' };
+    if (r === 'marketing') return { background: '#1a1a1a', color: '#3b82f6', border: '1px solid #3b82f6' };
+    return { background: '#1a1a1a', color: '#737373', border: '1px solid #333333' };
   };
 
   const inputSt: React.CSSProperties = { ...IS, width: '100%' };
@@ -464,31 +481,31 @@ function UsersTab() {
           <p style={{ fontSize: 12, color: '#737373', margin: '4px 0 0' }}>Gerencie quem tem acesso aos painéis Admin e Master.</p>
         </div>
         <button onClick={() => { setShowAdd(a => !a); setNewErr(''); }}
-          style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 14px', background: 'linear-gradient(135deg, #f7ad40, #d45f1a)', color: '#002042', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
+          style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 14px', background: 'linear-gradient(135deg, #DFFE00, #d45f1a)', color: '#000', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
           <Plus size={14} /> Novo Usuário
         </button>
       </div>
 
       {/* Add User Form */}
       {showAdd && (
-        <form onSubmit={handleAdd} style={{ background: '#001a33', border: '1px solid #f7ad40', borderRadius: 12, padding: '20px 20px 16px' }}>
-          <p style={{ fontSize: 12, fontWeight: 700, color: '#f7ad40', margin: '0 0 14px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>➕ Novo Usuário</p>
+        <form onSubmit={handleAdd} style={{ background: '#0a0a0a', border: '1px solid #DFFE00', borderRadius: 12, padding: '20px 20px 16px' }}>
+          <p style={{ fontSize: 12, fontWeight: 700, color: '#DFFE00', margin: '0 0 14px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>➕ Novo Usuário</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               <label style={{ fontSize: 10, color: '#737373', fontWeight: 600, textTransform: 'uppercase' }}>Usuário</label>
               <input value={newUser.username} onChange={e => setNewUser(p => ({ ...p, username: e.target.value }))} placeholder="ex: joao" style={inputSt}
-                onFocus={e => e.target.style.borderColor = '#f7ad40'} onBlur={e => e.target.style.borderColor = '#333333'} />
+                onFocus={e => e.target.style.borderColor = '#DFFE00'} onBlur={e => e.target.style.borderColor = '#333333'} />
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               <label style={{ fontSize: 10, color: '#4a7fa8', fontWeight: 600, textTransform: 'uppercase' }}>Senha</label>
               <input type="password" value={newUser.password} onChange={e => setNewUser(p => ({ ...p, password: e.target.value }))} placeholder="••••••••" style={inputSt}
-                onFocus={e => e.target.style.borderColor = '#f7ad40'} onBlur={e => e.target.style.borderColor = '#333333'} />
+                onFocus={e => e.target.style.borderColor = '#DFFE00'} onBlur={e => e.target.style.borderColor = '#333333'} />
             </div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 14 }}>
             <label style={{ fontSize: 10, color: '#737373', fontWeight: 600, textTransform: 'uppercase' }}>Tipo de Acesso</label>
             <select value={newUser.role} onChange={e => setNewUser(p => ({ ...p, role: e.target.value as 'admin' | 'master' }))} style={{ ...inputSt, cursor: 'pointer' }}
-              onFocus={e => e.target.style.borderColor = '#f7ad40'} onBlur={e => e.target.style.borderColor = '#333333'}>
+              onFocus={e => e.target.style.borderColor = '#DFFE00'} onBlur={e => e.target.style.borderColor = '#333333'}>
               <option value="admin">👤 Admin — gerencia conteúdo do site</option>
               <option value="marketing">📈 Marketing — Landing Pages e Integrações</option>
               <option value="master">🔑 Master — aprova pacotes e gerencia usuários</option>
@@ -497,7 +514,7 @@ function UsersTab() {
           {newErr && <p style={{ fontSize: 11, color: '#f87171', margin: '0 0 10px' }}>{newErr}</p>}
           <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
             <button type="button" onClick={() => setShowAdd(false)} style={{ padding: '8px 14px', background: 'transparent', color: '#737373', border: '1px solid #333333', borderRadius: 8, fontSize: 12, cursor: 'pointer' }}>Cancelar</button>
-            <button type="submit" disabled={newLoading} style={{ padding: '8px 18px', background: 'linear-gradient(135deg, #f7ad40, #d45f1a)', color: '#002042', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
+            <button type="submit" disabled={newLoading} style={{ padding: '8px 18px', background: 'linear-gradient(135deg, #DFFE00, #d45f1a)', color: '#000', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
               {newLoading ? 'Criando…' : 'Criar Usuário'}
             </button>
           </div>
@@ -512,9 +529,9 @@ function UsersTab() {
         <div key={u.id}>
           {/* Row */}
           {editId !== u.id ? (
-            <div style={{ background: '#001a33', border: '1px solid #333333', borderRadius: 12, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ width: 38, height: 38, borderRadius: '50%', background: '#002b52', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                {u.role === 'master' ? <KeyRound size={16} color="#f7ad40" /> : u.role === 'marketing' ? <Award size={16} color="#3b82f6" /> : <Users size={16} color="#737373" />}
+            <div style={{ background: '#0a0a0a', border: '1px solid #333333', borderRadius: 12, padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div style={{ width: 38, height: 38, borderRadius: '50%', background: '#1a1a1a', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                {u.role === 'master' ? <KeyRound size={16} color="#DFFE00" /> : u.role === 'marketing' ? <Award size={16} color="#3b82f6" /> : <Users size={16} color="#737373" />}
               </div>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: 14, fontWeight: 700, color: '#e8edf2' }}>{u.username}</div>
@@ -522,7 +539,7 @@ function UsersTab() {
               </div>
               <div style={{ display: 'flex', gap: 6 }}>
                 <button onClick={() => startEdit(u)}
-                  style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px', background: '#002042', color: '#f7ad40', border: '1px solid #333333', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
+                  style={{ display: 'flex', alignItems: 'center', gap: 5, padding: '7px 12px', background: '#111111', color: '#DFFE00', border: '1px solid #333333', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer' }}>
                   <Pencil size={12} /> Editar
                 </button>
                 <button onClick={() => handleDelete(u)}
@@ -533,24 +550,24 @@ function UsersTab() {
             </div>
           ) : (
             /* Edit Form */
-            <form onSubmit={handleEdit} style={{ background: '#001a33', border: '1px solid #f7ad40', borderRadius: 12, padding: '16px 20px' }}>
-              <p style={{ fontSize: 11, fontWeight: 700, color: '#f7ad40', margin: '0 0 12px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>✏️ Editando: {u.username}</p>
+            <form onSubmit={handleEdit} style={{ background: '#0a0a0a', border: '1px solid #DFFE00', borderRadius: 12, padding: '16px 20px' }}>
+              <p style={{ fontSize: 11, fontWeight: 700, color: '#DFFE00', margin: '0 0 12px', textTransform: 'uppercase', letterSpacing: '0.06em' }}>✏️ Editando: {u.username}</p>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                   <label style={{ fontSize: 10, color: '#737373', fontWeight: 600, textTransform: 'uppercase' }}>Novo Usuário</label>
                   <input value={editForm.username} onChange={e => setEditForm(p => ({ ...p, username: e.target.value }))} style={inputSt}
-                    onFocus={e => e.target.style.borderColor = '#f7ad40'} onBlur={e => e.target.style.borderColor = '#333333'} />
+                    onFocus={e => e.target.style.borderColor = '#DFFE00'} onBlur={e => e.target.style.borderColor = '#333333'} />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                   <label style={{ fontSize: 10, color: '#4a7fa8', fontWeight: 600, textTransform: 'uppercase' }}>Nova Senha <span style={{ color: '#4a7fa8', fontWeight: 400 }}>(deixe vazio pra manter)</span></label>
                   <input type="password" value={editForm.password} onChange={e => setEditForm(p => ({ ...p, password: e.target.value }))} placeholder="••••••••" style={inputSt}
-                    onFocus={e => e.target.style.borderColor = '#f7ad40'} onBlur={e => e.target.style.borderColor = '#333333'} />
+                    onFocus={e => e.target.style.borderColor = '#DFFE00'} onBlur={e => e.target.style.borderColor = '#333333'} />
                 </div>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 14 }}>
                 <label style={{ fontSize: 10, color: '#737373', fontWeight: 600, textTransform: 'uppercase' }}>Tipo de Acesso</label>
                 <select value={editForm.role} onChange={e => setEditForm(p => ({ ...p, role: e.target.value as 'admin' | 'master' }))} style={{ ...inputSt, cursor: 'pointer' }}
-                  onFocus={e => e.target.style.borderColor = '#f7ad40'} onBlur={e => e.target.style.borderColor = '#333333'}>
+                  onFocus={e => e.target.style.borderColor = '#DFFE00'} onBlur={e => e.target.style.borderColor = '#333333'}>
                   <option value="admin">👤 Admin — gerencia conteúdo do site</option>
                   <option value="marketing">📈 Marketing — Landing Pages e Integrações</option>
                   <option value="master">🔑 Master — aprova pacotes e gerencia usuários</option>
@@ -559,7 +576,7 @@ function UsersTab() {
               {editErr && <p style={{ fontSize: 11, color: '#f87171', margin: '0 0 10px' }}>{editErr}</p>}
               <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
                 <button type="button" onClick={() => setEditId(null)} style={{ padding: '8px 14px', background: 'transparent', color: '#737373', border: '1px solid #333333', borderRadius: 8, fontSize: 12, cursor: 'pointer' }}>Cancelar</button>
-                <button type="submit" disabled={editLoading} style={{ padding: '8px 18px', background: 'linear-gradient(135deg, #f7ad40, #d45f1a)', color: '#002042', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
+                <button type="submit" disabled={editLoading} style={{ padding: '8px 18px', background: 'linear-gradient(135deg, #DFFE00, #d45f1a)', color: '#000', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>
                   {editLoading ? 'Salvando…' : 'Salvar Alterações'}
                 </button>
               </div>
@@ -569,7 +586,7 @@ function UsersTab() {
       ))}
 
       {!loading && users.length === 0 && (
-        <div style={{ textAlign: 'center', padding: '40px 20px', color: '#737373', fontSize: 14, background: '#001a33', borderRadius: 12, border: '1px dashed #333333' }}>
+        <div style={{ textAlign: 'center', padding: '40px 20px', color: '#737373', fontSize: 14, background: '#0a0a0a', borderRadius: 12, border: '1px dashed #333333' }}>
           Nenhum usuário encontrado.
         </div>
       )}
@@ -640,15 +657,15 @@ export default function MasterAdmin() {
   const curPkgs = section === 'pending' ? pendingPkgs : section === 'approved' ? approvedPkgs : section === 'rejected' ? rejectedPkgs : [];
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#001529', color: '#e8edf2', fontFamily: 'Inter, system-ui, sans-serif', alignItems: 'flex-start' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: '#050505', color: '#e8edf2', fontFamily: 'Inter, system-ui, sans-serif', alignItems: 'flex-start' }}>
       {/* Sidebar */}
-      <aside style={{ width: 220, background: '#001a33', borderRight: '1px solid #333333', display: 'flex', flexDirection: 'column', padding: '24px 16px', gap: 8, position: 'sticky', top: 0, height: '100vh', overflowY: 'auto' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 8px 24px', fontSize: 15, fontWeight: 700, color: '#f7ad40', borderBottom: '1px solid #333333', marginBottom: 16 }}>
+      <aside style={{ width: 220, background: '#0a0a0a', borderRight: '1px solid #333333', display: 'flex', flexDirection: 'column', padding: '24px 16px', gap: 8, position: 'sticky', top: 0, height: '100vh', overflowY: 'auto' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 8px 24px', fontSize: 15, fontWeight: 700, color: '#DFFE00', borderBottom: '1px solid #333333', marginBottom: 16 }}>
           <Shield size={18} /> Admin Mestre
         </div>
 
         {totalPending > 0 && (
-          <div style={{ background: '#002b52', border: '1px solid #f7ad40', borderRadius: 8, padding: '10px 12px', fontSize: 12, color: '#f7ad40', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div style={{ background: '#1a1a1a', border: '1px solid #DFFE00', borderRadius: 8, padding: '10px 12px', fontSize: 12, color: '#DFFE00', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 6 }}>
             <AlertTriangle size={13} /> <strong>{totalPending} item{totalPending > 1 ? 's' : ''}</strong> aguardando aprovação
           </div>
         )}
@@ -657,11 +674,11 @@ export default function MasterAdmin() {
           <button key={s.id} onClick={() => setSection(s.id)} style={{
             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
             padding: '10px 12px', borderRadius: 8, border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: 13, fontWeight: 600,
-            background: section === s.id ? '#002b52' : 'transparent',
-            color: section === s.id ? '#f7ad40' : '#737373',
+            background: section === s.id ? '#1a1a1a' : 'transparent',
+            color: section === s.id ? '#DFFE00' : '#737373',
           }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 7 }}>{s.icon} {s.label}</span>
-            {s.count > 0 && <span style={{ fontSize: 11, background: '#002b52', color: '#f7ad40', padding: '1px 7px', borderRadius: 10, fontWeight: 700, border: '1px solid #f7ad40' }}>{s.count}</span>}
+            {s.count > 0 && <span style={{ fontSize: 11, background: '#1a1a1a', color: '#DFFE00', padding: '1px 7px', borderRadius: 10, fontWeight: 700, border: '1px solid #DFFE00' }}>{s.count}</span>}
           </button>
         ))}
 
@@ -671,8 +688,8 @@ export default function MasterAdmin() {
         <button onClick={() => setSection('users')} style={{
           display: 'flex', alignItems: 'center', gap: 8,
           padding: '10px 12px', borderRadius: 8, border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: 13, fontWeight: 600,
-          background: section === 'users' ? '#002b52' : 'transparent',
-          color: section === 'users' ? '#f7ad40' : '#737373',
+          background: section === 'users' ? '#1a1a1a' : 'transparent',
+          color: section === 'users' ? '#DFFE00' : '#737373',
         }}>
           <Users size={14} /> Usuários
         </button>
@@ -681,8 +698,8 @@ export default function MasterAdmin() {
         <button onClick={() => setSection('trash')} style={{
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
           padding: '10px 12px', borderRadius: 8, border: 'none', cursor: 'pointer', textAlign: 'left', fontSize: 13, fontWeight: 600,
-          background: section === 'trash' ? '#002b52' : 'transparent',
-          color: section === 'trash' ? '#f7ad40' : '#737373',
+          background: section === 'trash' ? '#1a1a1a' : 'transparent',
+          color: section === 'trash' ? '#DFFE00' : '#737373',
         }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: 7 }}><Trash2 size={14} /> Lixeira</span>
           {deletedPkgs.length > 0 && <span style={{ fontSize: 11, background: '#3a1a1a', color: '#f87171', padding: '1px 7px', borderRadius: 10, fontWeight: 700 }}>{deletedPkgs.length}</span>}
@@ -706,7 +723,7 @@ export default function MasterAdmin() {
         ) : section === 'trash' ? (
           /* Trash Tab */
           <>
-            <h1 style={{ fontSize: 22, fontWeight: 800, color: '#f7ad40', marginBottom: 4 }}>Lixeira</h1>
+            <h1 style={{ fontSize: 22, fontWeight: 800, color: '#DFFE00', marginBottom: 4 }}>Lixeira</h1>
             <p style={{ fontSize: 13, color: '#737373', marginBottom: 24 }}>Pacotes excluídos. Restaure ou exclua permanentemente.</p>
             {deletedPkgs.length > 0 ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -714,12 +731,12 @@ export default function MasterAdmin() {
                   <AlertTriangle size={13} /> Pacotes na lixeira não aparecem no site. Restaure para reativá-los.
                 </div>
                 {deletedPkgs.map(({ p: pkg, i: realIdx }) => (
-                  <div key={realIdx} style={{ background: '#002042', border: '1px solid #3a1a1a', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', opacity: 0.8 }}>
-                    {pkg.img ? <img src={pkg.img} alt={pkg.title} style={{ width: 52, height: 52, objectFit: 'cover', borderRadius: 8, flexShrink: 0 }} /> : <div style={{ width: 52, height: 52, background: '#002b52', borderRadius: 8, flexShrink: 0 }} />}
+                  <div key={realIdx} style={{ background: '#111111', border: '1px solid #3a1a1a', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 12, padding: '14px 16px', opacity: 0.8 }}>
+                    {pkg.img ? <img src={pkg.img} alt={pkg.title} style={{ width: 52, height: 52, objectFit: 'cover', borderRadius: 8, flexShrink: 0 }} /> : <div style={{ width: 52, height: 52, background: '#1a1a1a', borderRadius: 8, flexShrink: 0 }} />}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ fontSize: 14, fontWeight: 700, color: '#e8edf2' }}>{pkg.title || 'Sem título'}</div>
                       <div style={{ fontSize: 12, color: '#737373', marginTop: 2 }}>
-                        Excluído por <strong style={{ color: '#f7ad40' }}>{pkg.deletedBy ?? 'admin'}</strong>
+                        Excluído por <strong style={{ color: '#DFFE00' }}>{pkg.deletedBy ?? 'admin'}</strong>
                         {pkg.deletedAt ? ` em ${new Date(pkg.deletedAt).toLocaleDateString('pt-BR')}` : ''}
                       </div>
                     </div>
@@ -744,7 +761,7 @@ export default function MasterAdmin() {
           </>
         ) : (
           <>
-            <h1 style={{ fontSize: 22, fontWeight: 800, color: '#f7ad40', marginBottom: 4 }}>
+            <h1 style={{ fontSize: 22, fontWeight: 800, color: '#DFFE00', marginBottom: 4 }}>
               {section === 'pending' ? 'Aguardando Aprovação' : section === 'approved' ? 'Conteúdo Aprovado' : 'Conteúdo Rejeitado'}
             </h1>
             <p style={{ fontSize: 13, color: '#737373', marginBottom: 24 }}>

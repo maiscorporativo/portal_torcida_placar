@@ -44,4 +44,4 @@ export const DEFAULT_IMAGES = {
 
 export type ImageKey = keyof typeof DEFAULT_IMAGES;
 
-export const STORAGE_KEY = 'torcida_image_config';
+export const STORAGE_KEY = 'emais_image_config';

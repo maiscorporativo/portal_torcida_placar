@@ -9,16 +9,10 @@ import pool from './db.js';
 const USERS = [
   { username: 'admin',  password: 'emais2025', role: 'admin'  },
   { username: 'master', password: 'zago2026',  role: 'master' },
-  { username: 'marketing', password: 'mkt2025', role: 'marketing' },
 ];
 
 async function seed() {
   console.log('🔐 Criando usuários admin...\n');
-  try {
-    await pool.query("ALTER TABLE admin_users MODIFY COLUMN role ENUM('admin', 'master', 'marketing') NOT NULL DEFAULT 'admin'");
-  } catch (err) {
-    // silently ignore if it fails
-  }
 
   for (const user of USERS) {
     const hash = await bcrypt.hash(user.password, 10);
