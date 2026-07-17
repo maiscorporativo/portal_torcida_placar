@@ -34,3 +34,13 @@ export function formatDisplayPrice(rawPrice: string, currencyCode: string): stri
   const locale = CURRENCY_LOCALES[currencyCode] || 'pt-BR';
   return new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(num);
 }
+
+/** Frase exibida quando o pacote não tem preço definido. */
+export const PRICE_ON_REQUEST = 'Valor sob consulta';
+
+/** Um pacote tem preço quando o campo contém dígitos e o valor não é zero.
+ *  Preço vazio ou zero → o site exibe PRICE_ON_REQUEST no lugar do valor. */
+export function hasPrice(rawPrice?: string): boolean {
+  const digits = (rawPrice || '').replace(/\D/g, '');
+  return !!digits && parseInt(digits, 10) > 0;
+}
