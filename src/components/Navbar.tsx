@@ -14,14 +14,6 @@ export default function Navbar() {
   return (
     <>
 
-      {/* Top Banner */}
-      <div className="w-full px-8 pt-4 pb-2 text-xs flex justify-center items-center text-neutral-100 font-medium">
-        <span className="text-center">
-          Confira nosso <a href="/" onClick={scrollTo('events')} className="underline text-gold hover:text-white transition-colors font-bold">calendário completo de pacotes esportivos</a>
-        </span>
-      </div>
-
-
       <nav className="w-full sticky top-4 z-50 px-4 transition-all mb-6">
         <div className="mx-auto w-full max-w-[1400px] flex items-center justify-between h-[86px] bg-[#09090b]/60 backdrop-blur-lg rounded-lg px-6 shadow-xl border border-white/10 font-sans">
 
