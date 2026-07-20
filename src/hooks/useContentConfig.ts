@@ -280,6 +280,15 @@ export function useContentConfig() {
   const setPackageTrending = useCallback((i: number, isTrending: boolean) =>
     persist({ ...content, packages: content.packages.map((p, idx) => idx === i ? { ...p, isTrending } : p) }), [content, persist]);
 
+  /** Liga/desliga a exibição do pacote NESTE portal (controle local da
+   *  integração — não altera o conteúdo nem o status de aprovação). */
+  const setPackageHidden = useCallback((i: number, hidden: boolean) =>
+    persist({ ...content, packages: content.packages.map((p, idx) => idx === i ? { ...p, portalHidden: hidden } : p) }), [content, persist]);
+
+  /** Override local do template de esporte (pacotes de outra origem). */
+  const setPackageSportType = useCallback((i: number, sportType: string) =>
+    persist({ ...content, packages: content.packages.map((p, idx) => idx === i ? { ...p, sportType } : p) }), [content, persist]);
+
   const approvePackage = useCallback((i: number) => {
     const user = getMasterUser();
     return persist({ ...content, packages: content.packages.map((p, idx) => idx === i ? { ...p, status: 'approved', approvedBy: user, approvedAt: now(), rejectedBy: undefined, rejectedAt: undefined } : p) });
@@ -399,7 +408,7 @@ export function useContentConfig() {
     updateEvent, addEvent, removeEvent, reorderEvent,
     approveEvent, rejectEvent, masterUpdateEvent,
     updatePackage, addPackage, duplicatePackage, removePackage, restorePackage, permanentRemovePackage, reorderPackage,
-    approvePackage, rejectPackage, masterUpdatePackage, marketingUpdatePackage, setPackageTrending,
+    approvePackage, rejectPackage, masterUpdatePackage, marketingUpdatePackage, setPackageTrending, setPackageHidden, setPackageSportType,
     addCategory, removeCategory, updateCategory, reorderCategory, updateCategoryIcon,
     resetAll, exportConfig, importConfig,
   };
