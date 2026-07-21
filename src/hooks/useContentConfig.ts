@@ -216,8 +216,44 @@ export function useContentConfig() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [refetch]);
 
-  /* ── Save helper ── */
-  const persist = useCallback(async (next: ContentStore) => {
+  /* ── Save helper ──
+     Salva sempre em série (nunca duas requisições PUT em paralelo). Aqui não
+     havia debounce nenhum — cada tecla digitada disparava um PUT imediato,
+     então requisições concorrentes eram praticamente garantidas em qualquer
+     digitação normal. Se uma edição nova chega enquanto o save anterior
+     ainda está em voo, ela é enfileirada em `pendingNext` e processada assim
+     que a atual terminar, em vez de disparar outra requisição concorrente —
+     evitando que duas completem fora de ordem e a mais antiga "vença",
+     revertendo parte do que o usuário tinha acabado de digitar (tanto na
+     tela, via refetch(), quanto no próprio banco). */
+  const saveChain = useRef<Promise<void>>(Promise.resolve());
+  const pendingNext = useRef<ContentStore | null>(null);
+
+  const drainSaveQueue = useCallback(async (): Promise<void> => {
+    while (pendingNext.current !== null) {
+      const merged = pendingNext.current;
+      pendingNext.current = null;
+      setSaving(true);
+      setSaveError(null);
+      try {
+        const heroRaw = localStorage.getItem('emais_image_config');
+        const heroImages = heroRaw ? JSON.parse(heroRaw) : {};
+        await putContent({ ...merged, heroImages });
+        setSaveError(null);
+        bc?.postMessage('update');
+      } catch (err: any) {
+        console.warn('[useContentConfig] API save failed:', err);
+        setSaveError(err.message || 'Erro desconhecido ao salvar');
+        // Não interrompe o laço: se já houver uma edição mais nova
+        // enfileirada, ela ainda tenta salvar em seguida.
+      }
+    }
+    isSaving.current = false;
+    hasLocalUnsaved.current = false;
+    setSaving(false);
+  }, []);
+
+  const persist = useCallback((next: ContentStore): Promise<void> => {
     // Merge imagens do localStorage para não perder dados salvos por outras instâncias do hook
     // (ex: ImageAdmin salva imagem, MasterAdmin aprova sem ter carregado a imagem na sua instância)
     const localCache = loadCache();
@@ -251,21 +287,11 @@ export function useContentConfig() {
     lastUpdated.current = JSON.stringify(merged).slice(0, 40);
     window.dispatchEvent(new Event(UPDATE_EVENT));
 
-    try {
-      const heroRaw = localStorage.getItem('emais_image_config');
-      const heroImages = heroRaw ? JSON.parse(heroRaw) : {};
-      await putContent({ ...merged, heroImages });
-      hasLocalUnsaved.current = false;
-      setSaveError(null);
-      bc?.postMessage('update');
-    } catch (err: any) {
-      console.warn('[useContentConfig] API save failed:', err);
-      setSaveError(err.message || 'Erro desconhecido ao salvar');
-    } finally {
-      isSaving.current = false;
-      setSaving(false);
-    }
-  }, []);
+    pendingNext.current = merged;
+    const run = saveChain.current.then(drainSaveQueue);
+    saveChain.current = run.catch(() => {});
+    return run;
+  }, [drainSaveQueue]);
 
   /* ── Events ── */
   const updateEvent = useCallback((i: number, d: Partial<EventHighlight>) =>
