@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
-  CheckCircle2, Calendar, Users,
+  CheckCircle2, Calendar, Users, MapPin,
   MessageCircle, AlertTriangle, Zap, Trophy, Headset, ChevronRight
 } from 'lucide-react';
 import { useContentConfig } from '../hooks/useContentConfig';
@@ -466,6 +466,9 @@ export default function PackageLP() {
     { titulo: 'Suporte 24/7', descricao: 'Nossa equipe está disponível antes, durante e após o evento para garantir sua satisfação.', icone: 'Headset' }
   ]);
 
+  // Visibilidade das seções opcionais da LP (visíveis por padrão)
+  const vis: Record<string, boolean> = { experiencia: true, destino: true, ...parseJSON(pkg.lpSections, {}) };
+
   const sport = pkg.sportType || 'automobilismo';
 
   const theme = {
@@ -770,24 +773,92 @@ export default function PackageLP() {
         </div>
       </section>
 
-      {/* --- EXPERIÊNCIA --- */}
+      {/* --- EXPERIÊNCIAS --- */}
+      {vis.experiencia && (
       <section id="experiencia" style={{ padding: isMobile ? '60px 20px' : '100px 20px', background: '#050505' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 32 : 60, alignItems: 'center' }}>
           <div>
             <h2 style={{ fontSize: isMobile ? '2.2rem' : 'clamp(2.5rem, 4vw, 3.5rem)', fontWeight: 900, margin: '0 0 24px', lineHeight: 1.1 }}>Uma Experiência <span style={{ color: '#DFFE00' }}>Inesquecível</span></h2>
             <div style={{ fontSize: isMobile ? 14 : 16, color: '#aaa', lineHeight: 1.8 }} dangerouslySetInnerHTML={{ __html: pkg.experienciaSection || 'Nossos pacotes garantem que você vivencie cada momento memorável com conforto, segurança e acesso a áreas exclusivas que a maioria dos visitantes nunca experimenta.' }} />
+            {(pkg.experienciaItems || '').split(';').map(s => s.trim()).filter(Boolean).length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14, marginTop: 28 }}>
+                {(pkg.experienciaItems || '').split(';').map(s => s.trim()).filter(Boolean).map((item, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div style={{ width: 22, height: 22, background: '#DFFE00', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <CheckCircle2 size={13} color="#050505" />
+                    </div>
+                    <span style={{ fontSize: isMobile ? 14 : 15, fontWeight: 600, color: '#eee' }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <div style={{ display: 'grid', gap: 20 }}>
-            {pkg.galleryImages ? (
-              pkg.galleryImages.split(';').filter(Boolean).slice(0, 2).map((img, i) => (
-                <img key={i} src={fixImgPath(img.trim())} alt="Experiência" style={{ width: '100%', borderRadius: 24, border: '1px solid #222' }} />
-              ))
-            ) : (
-              <div style={{ width: '100%', height: 300, background: '#111', borderRadius: 24, border: '1px solid #222' }} />
-            )}
+            {(() => {
+              // Usa as imagens escolhidas no admin (experienciaImages); se não houver,
+              // usa as 2 primeiras do Banco de Imagens como fallback. Imagens que foram
+              // removidas do banco ("órfãs") são ignoradas automaticamente.
+              const bank = (pkg.galleryImages || '').split(';').map(s => s.trim()).filter(Boolean);
+              const picked = (pkg.experienciaImages || '').split(';').map(s => s.trim()).filter(Boolean).filter(u => bank.includes(u));
+              const imgs = picked.length > 0 ? picked : bank.slice(0, 2);
+              return imgs.length > 0 ? (
+                imgs.map((img, i) => (
+                  <img key={i} src={fixImgPath(img)} alt="Experiência" style={{ width: '100%', borderRadius: 24, border: '1px solid #222' }} />
+                ))
+              ) : (
+                <div style={{ width: '100%', height: 300, background: '#111', borderRadius: 24, border: '1px solid #222' }} />
+              );
+            })()}
           </div>
         </div>
       </section>
+      )}
+
+      {/* --- DESTINO & LIFESTYLE --- */}
+      {(() => {
+        if (!vis.destino) return null;
+        const destino = parseJSON(pkg.destinoLifestyleData, null);
+        if (!destino || (!destino.titulo && !destino.descricao)) return null;
+        const bank = (pkg.galleryImages || '').split(';').map(s => s.trim()).filter(Boolean);
+        const imgs: string[] = (destino.imagens || []).filter((u: string) => bank.includes(u));
+        const items: string[] = (destino.items || []).filter(Boolean);
+        const fotos = (
+          <div style={{ display: 'grid', gridTemplateColumns: imgs.length > 1 ? '1fr 1fr' : '1fr', gap: 16 }}>
+            {imgs.length > 0 ? imgs.map((img, i) => (
+              <img key={i} src={fixImgPath(img)} alt={destino.titulo || 'Destino'} style={{ width: '100%', height: imgs.length > 1 ? 220 : 380, objectFit: 'cover', borderRadius: 24, border: '1px solid #222' }} />
+            )) : (
+              <div style={{ width: '100%', height: 380, background: '#111', borderRadius: 24, border: '1px solid #222' }} />
+            )}
+          </div>
+        );
+        const texto = (
+          <div>
+            <h2 style={{ fontSize: isMobile ? '2.2rem' : 'clamp(2.5rem, 4vw, 3.5rem)', fontWeight: 900, margin: '0 0 24px', lineHeight: 1.1 }}>
+              <span style={{ color: '#DFFE00' }}>{destino.titulo}</span>
+            </h2>
+            {destino.descricao && <p style={{ fontSize: isMobile ? 14 : 16, color: '#aaa', lineHeight: 1.8, marginBottom: items.length > 0 ? 28 : 0 }}>{destino.descricao}</p>}
+            {items.length > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                {items.map((item, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                    <div style={{ width: 22, height: 22, background: '#DFFE00', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <MapPin size={12} color="#050505" />
+                    </div>
+                    <span style={{ fontSize: isMobile ? 14 : 15, fontWeight: 600, color: '#eee' }}>{item}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+        return (
+          <section style={{ padding: isMobile ? '60px 20px' : '100px 20px', background: '#0a0a0a', borderTop: '1px solid #222', borderBottom: '1px solid #222' }}>
+            <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: isMobile ? 32 : 60, alignItems: 'center' }}>
+              {destino.invertido ? <>{texto}{fotos}</> : <>{fotos}{texto}</>}
+            </div>
+          </section>
+        );
+      })()}
 
       {/* --- PARCERIA --- */}
       <section style={{ padding: isMobile ? '60px 20px' : '100px 20px', background: '#111', borderTop: '1px solid #222', borderBottom: '1px solid #222', textAlign: 'center' }}>
