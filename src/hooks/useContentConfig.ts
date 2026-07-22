@@ -168,16 +168,31 @@ export function useContentConfig() {
   const lastUpdated = useRef<string>('');
   const isSaving = useRef(false);
   const hasLocalUnsaved = useRef(false);
+  // Incrementado a cada edição local (ver persist()). Um refetch() em voo
+  // captura a versão vigente ANTES do fetch; se uma edição local começar (e
+  // talvez já terminar de salvar) enquanto esse GET ainda está em trânsito, a
+  // versão muda e a resposta — que reflete dados de ANTES da edição — é
+  // descartada. Sem isso, um GET lento (rede instável, poll disparado antes
+  // de digitar) podia responder DEPOIS do save mais recente já ter zerado
+  // hasLocalUnsaved/isSaving, sobrescrevendo silenciosamente o que acabou de
+  // ser digitado — exatamente o sintoma de "o formulário desfaz o que acabei
+  // de digitar" quando a conexão está lenta.
+  const editVersion = useRef(0);
 
   const refetch = useCallback(async () => {
     if (isSaving.current) return;
     if (hasLocalUnsaved.current) return; // não sobrescrebe se há alterações locais não salvas
+    const startVersion = editVersion.current;
     try {
       const res = await fetch('/api/content?b64=1&t=' + Date.now(), { cache: 'no-store' });
       if (!res.ok) return;
       const json = unwrapContentResponse(await res.json());
       const key = json.updated_at ?? JSON.stringify(json).slice(0, 40);
       if (key === lastUpdated.current) return;
+      // Se local mudou ou já salvou enquanto esse GET estava em voo, descarta —
+      // é dado velho, de antes da edição.
+      if (isSaving.current || hasLocalUnsaved.current) return;
+      if (editVersion.current !== startVersion) return;
       lastUpdated.current = key;
       const data: ContentStore = {
         events:         json.events         ?? DEFAULT_EVENTS,
@@ -282,6 +297,7 @@ export function useContentConfig() {
       }),
     };
 
+    editVersion.current++;
     hasLocalUnsaved.current = true;
     isSaving.current = true;
     setSaving(true);
