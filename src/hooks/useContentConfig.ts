@@ -386,6 +386,10 @@ export function useContentConfig() {
     const user = getAdminUser();
     const copy: TrendingPackage = {
       ...src,
+      // Sem isso, a cópia herdava o sharedId do original: as duas
+      // apontavam pra MESMA linha na tabela compartilhada, e quem fosse
+      // salvo por último sobrescrevia a outra — o original "sumia".
+      sharedId: undefined,
       title: `${src.title} (cópia)`,
       slug: src.slug ? uniqueSlug(`${src.slug}-copia`, content.packages.map(p => p.slug || '')) : undefined,
       status: 'pending',
