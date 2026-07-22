@@ -35,7 +35,6 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { TrendingPackage } from '../types';
-import { useContentConfig } from '../hooks/useContentConfig';
 
 /* ── Estilos base (mesma linguagem visual dos painéis) ── */
 const IS: React.CSSProperties = {
@@ -451,10 +450,17 @@ function InclusosEditor({ items, onChange, addLabel }: {
 /* ════════════════════════════════════════════════════════════════
    Editor principal — usado por Admin, Master e Marketing
    ════════════════════════════════════════════════════════════════ */
-export default function LPContentEditor({ pkg, onUpdate, tokenKey }: {
+export default function LPContentEditor({ pkg, onUpdate, tokenKey, allPackages }: {
   pkg: TrendingPackage;
   onUpdate: (d: Partial<TrendingPackage>) => void;
   tokenKey: string;
+  // Pacotes do portal, só para o seletor "Importar de outro pacote..." do
+  // Banco de Imagens. Recebido como prop (em vez de chamar useContentConfig()
+  // aqui dentro) de propósito: uma segunda instância do hook, com seu
+  // próprio polling de 5s, fazia o array de pacotes trocar de referência sem
+  // motivo — em painéis com buffer local (Admin Mestre) isso apagava edições
+  // ainda não salvas.
+  allPackages?: TrendingPackage[];
 }) {
   const pacotes = parsePacotes(pkg.pacotesOptionsData);
   const setPacotes = (obj: PacotesObj) => onUpdate({ pacotesOptionsData: JSON.stringify(obj) });
@@ -467,8 +473,7 @@ export default function LPContentEditor({ pkg, onUpdate, tokenKey }: {
   // de outro pacote..." do Banco de Imagens — evita reenviar a mesma foto.
   // Importar do próprio pacote é inofensivo (as fotos já presentes são
   // ignoradas), então não há necessidade de excluí-lo da lista.
-  const { packages: allPackages } = useContentConfig();
-  const otherPackages = allPackages
+  const otherPackages = (allPackages || [])
     .map(p => ({ title: p.title || 'Sem título', images: splitList(p.galleryImages) }))
     .filter(p => p.images.length > 0);
   const experienciaItems = splitList(pkg.experienciaItems);
